@@ -1,0 +1,3106 @@
+<meta charset="utf-8">
+<title>Clarity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============================================================
+   Clarity — ein Tagesbegleiter.
+   Bewusst eine eigene Farbwelt: die Palette folgt dem Tageslauf,
+   nicht dem Theme des Betrachters. Jede Farbe wird explizit
+   gesetzt, damit die Seite auf jedem Untergrund haelt.
+   ============================================================ */
+
+/* Grundwerte = Vormittag. Gilt, bevor JS den Tagesabschnitt setzt. */
+:root{
+  --sky1:#6E9FCF; --sky2:#AFCDE4; --sky3:#EEF2F0;
+  --glow:rgba(255,246,214,.70); --sun-x:50%; --sun-y:78%;
+  --ink:#141C28; --ink2:#435066; --ink3:#6D7B91;
+  --surf:rgba(255,255,255,.86); --surf2:rgba(255,255,255,.58);
+  --surf3:rgba(255,255,255,.34);
+  --line:rgba(20,28,40,.13); --line2:rgba(20,28,40,.07);
+  --accent:#15607E; --accent2:#1E7EA2; --on-accent:#FFFFFF;
+  --accent-soft:rgba(21,96,126,.11);
+  --good:#1C7A5A; --warn:#9A5B18; --star:#B4801C;
+  --shadow:0 1px 2px rgba(16,24,38,.06), 0 8px 26px rgba(16,24,38,.09);
+  --shadow-lift:0 2px 6px rgba(16,24,38,.09), 0 18px 44px rgba(16,24,38,.14);
+
+  --sp1:.375rem; --sp2:.625rem; --sp3:1rem; --sp4:1.5rem; --sp5:2.25rem;
+  --r1:9px; --r2:14px; --r3:20px;
+  --fs-xl:clamp(2.1rem,6.2vw,3.1rem);
+  --fs-lg:clamp(1.15rem,2.4vw,1.4rem);
+  --fs-md:1rem; --fs-sm:.875rem; --fs-xs:.78rem;
+  --display:"Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif;
+  --body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+:root[data-day="dawn"],:root[data-day="dusk"],:root[data-day="night"]{color-scheme:dark}
+:root[data-day="dawn"]{
+  --sky1:#2A2C50; --sky2:#7A5F80; --sky3:#E9A87E;
+  --glow:rgba(255,196,140,.55);
+  --ink:#F3EDE9; --ink2:#CDBFBC; --ink3:#A8999A;
+  --surf:rgba(30,26,46,.72); --surf2:rgba(30,26,46,.48); --surf3:rgba(255,255,255,.08);
+  --line:rgba(255,238,228,.16); --line2:rgba(255,238,228,.09);
+  --accent:#E9A06B; --accent2:#F2B683; --on-accent:#2A1B12;
+  --accent-soft:rgba(233,160,107,.16);
+  --good:#7BC9A4; --warn:#E9B872; --star:#F0C46A;
+  --shadow:0 1px 2px rgba(0,0,0,.25), 0 10px 30px rgba(0,0,0,.30);
+  --shadow-lift:0 2px 8px rgba(0,0,0,.30), 0 20px 50px rgba(0,0,0,.40);
+}
+:root[data-day="morning"]{
+  --sky1:#6E9FCF; --sky2:#AFCDE4; --sky3:#EEF2F0;
+  --glow:rgba(255,246,214,.70);
+  --ink:#141C28; --ink2:#435066; --ink3:#6D7B91;
+  --surf:rgba(255,255,255,.86); --surf2:rgba(255,255,255,.58); --surf3:rgba(255,255,255,.34);
+  --line:rgba(20,28,40,.13); --line2:rgba(20,28,40,.07);
+  --accent:#15607E; --accent2:#1E7EA2; --on-accent:#FFFFFF;
+  --accent-soft:rgba(21,96,126,.11);
+  --good:#1C7A5A; --warn:#9A5B18; --star:#B4801C;
+}
+:root[data-day="midday"]{
+  --sky1:#4E93CE; --sky2:#9CC8E6; --sky3:#F0F4EE;
+  --glow:rgba(255,252,226,.78);
+  --ink:#101A22; --ink2:#3D4E59; --ink3:#66787F;
+  --surf:rgba(255,255,255,.88); --surf2:rgba(255,255,255,.60); --surf3:rgba(255,255,255,.36);
+  --line:rgba(16,26,34,.13); --line2:rgba(16,26,34,.07);
+  --accent:#0F6B60; --accent2:#158A7B; --on-accent:#FFFFFF;
+  --accent-soft:rgba(15,107,96,.11);
+  --good:#146B52; --warn:#8F5714; --star:#AC7A16;
+}
+:root[data-day="afternoon"]{
+  --sky1:#83A9C4; --sky2:#DFC9A9; --sky3:#F6EDE0;
+  --glow:rgba(255,225,176,.72);
+  --ink:#20180F; --ink2:#5A4C3C; --ink3:#867561;
+  --surf:rgba(255,253,249,.86); --surf2:rgba(255,253,249,.58); --surf3:rgba(255,255,255,.34);
+  --line:rgba(32,24,15,.13); --line2:rgba(32,24,15,.07);
+  --accent:#96501F; --accent2:#B0632C; --on-accent:#FFF6EC;
+  --accent-soft:rgba(150,80,31,.11);
+  --good:#20705A; --warn:#8C5312; --star:#A8751A;
+}
+:root[data-day="dusk"]{
+  --sky1:#25305C; --sky2:#6B4A73; --sky3:#DE7E62;
+  --glow:rgba(255,158,110,.48);
+  --ink:#F6EFEC; --ink2:#D2C4C6; --ink3:#A99CA4;
+  --surf:rgba(26,25,50,.74); --surf2:rgba(26,25,50,.50); --surf3:rgba(255,255,255,.08);
+  --line:rgba(246,232,228,.16); --line2:rgba(246,232,228,.09);
+  --accent:#F09070; --accent2:#F7A98D; --on-accent:#2B1410;
+  --accent-soft:rgba(240,144,112,.16);
+  --good:#7ECBA8; --warn:#EDBB79; --star:#F3C877;
+  --shadow:0 1px 2px rgba(0,0,0,.25), 0 10px 30px rgba(0,0,0,.30);
+  --shadow-lift:0 2px 8px rgba(0,0,0,.30), 0 20px 50px rgba(0,0,0,.40);
+}
+:root[data-day="night"]{
+  --sky1:#070B18; --sky2:#101832; --sky3:#1D2743;
+  --glow:rgba(140,168,255,.20);
+  --ink:#EAEFFA; --ink2:#B4BFD6; --ink3:#8592AD;
+  --surf:rgba(18,25,46,.76); --surf2:rgba(18,25,46,.52); --surf3:rgba(255,255,255,.06);
+  --line:rgba(206,220,255,.15); --line2:rgba(206,220,255,.08);
+  --accent:#8AA6F5; --accent2:#A5BAFA; --on-accent:#0B1226;
+  --accent-soft:rgba(138,166,245,.15);
+  --good:#6FC7A2; --warn:#E3B776; --star:#E6C46F;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  --shadow-lift:0 2px 8px rgba(0,0,0,.35), 0 20px 50px rgba(0,0,0,.45);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+body{
+  margin:0; min-height:100vh;
+  background:var(--sky3);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:var(--fs-md);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.sky,.glow{position:fixed; inset:0; pointer-events:none}
+.sky{
+  z-index:-2;
+  background:linear-gradient(178deg,var(--sky1) 0%,var(--sky2) 46%,var(--sky3) 100%);
+  transition:background 1.6s linear;
+}
+.glow{
+  z-index:-1;
+  background:radial-gradient(58vw 46vh at var(--sun-x) var(--sun-y),var(--glow) 0%,transparent 72%);
+  transition:background 1.6s linear;
+}
+h1,h2,h3{font-family:var(--display); font-weight:700; margin:0; text-wrap:balance; letter-spacing:-.015em}
+p{margin:0}
+button{font:inherit; color:inherit; background:none; border:none; cursor:pointer}
+input{font:inherit; color:inherit}
+a{color:var(--accent); text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--accent2); outline-offset:2px; border-radius:4px}
+.eyebrow{
+  font-family:var(--mono); font-size:var(--fs-xs); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink3);
+}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- Geruest ---------- */
+.shell{display:flex; min-height:100vh; align-items:stretch}
+.rail{
+  display:none; flex-direction:column; gap:var(--sp1);
+  width:216px; flex:0 0 216px; padding:var(--sp4) var(--sp3);
+  position:sticky; top:0; height:100vh;
+}
+.brand{display:flex; align-items:center; gap:.55rem; padding:0 .5rem var(--sp4)}
+.brand-mark{width:26px; height:26px; flex:0 0 26px; color:var(--accent)}
+.brand-name{font-family:var(--display); font-weight:700; font-size:1.15rem; letter-spacing:-.02em}
+.navbtn{
+  display:flex; align-items:center; gap:.7rem; width:100%;
+  padding:.6rem .7rem; border-radius:var(--r1);
+  color:var(--ink2); font-weight:500; text-align:left;
+  transition:background .18s ease,color .18s ease;
+}
+.navbtn svg{width:19px; height:19px; flex:0 0 19px; opacity:.9}
+.navbtn:hover{background:var(--surf3); color:var(--ink)}
+.navbtn[aria-current="page"]{background:var(--surf); color:var(--ink); box-shadow:var(--shadow)}
+.navbtn[aria-current="page"] svg{color:var(--accent); opacity:1}
+.navbtn .badge{
+  margin-left:auto; font-family:var(--mono); font-size:.68rem;
+  background:var(--accent-soft); color:var(--accent); padding:.1rem .38rem; border-radius:99px;
+}
+.rail-foot{margin-top:auto; display:flex; flex-direction:column; gap:var(--sp2); padding:0 .3rem}
+
+.main{flex:1 1 auto; min-width:0; padding:var(--sp4) var(--sp3) 6.5rem}
+.wrap{max-width:1020px; margin:0 auto; display:flex; flex-direction:column; gap:var(--sp4)}
+
+/* Mobiler Kopf + Tableiste */
+.mhead{
+  display:flex; align-items:center; justify-content:space-between; gap:var(--sp2);
+  padding:.2rem .2rem var(--sp3);
+}
+/* Im Anzeigefenster von claude.ai steht der Name schon eine Zeile hoeher —
+   dann faellt unsere eigene Wortmarke weg und die Zeile schrumpft. */
+.mhead.eingebettet{justify-content:flex-end; padding-bottom:var(--sp2)}
+.mhead.eingebettet .mbrand{display:none}
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:40;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:2px;
+  padding:.35rem .35rem calc(.35rem + env(safe-area-inset-bottom));
+  background:var(--surf); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  transition:transform .26s cubic-bezier(.4,0,.2,1);
+}
+/* Beim Runterscrollen aus dem Weg, beim Hochwischen wieder da. */
+.tabbar.weg{transform:translateY(115%)}
+.tab{
+  display:flex; flex-direction:column; align-items:center; gap:.15rem;
+  padding:.45rem .2rem .3rem; border-radius:var(--r1);
+  color:var(--ink3); font-size:.68rem; font-weight:600;
+}
+.tab svg{width:21px; height:21px}
+.tab[aria-current="page"]{color:var(--accent); background:var(--accent-soft)}
+
+/* ---------- Karten ---------- */
+.card{
+  background:var(--surf); border:1px solid var(--line);
+  border-radius:var(--r3); padding:var(--sp4);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px) saturate(1.1); -webkit-backdrop-filter:blur(18px) saturate(1.1);
+}
+.card.tight{padding:var(--sp3)}
+.card-head{display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp2); margin-bottom:var(--sp3)}
+.card-head h2{font-size:var(--fs-lg)}
+.stack{display:flex; flex-direction:column; gap:var(--sp3)}
+.row{display:flex; align-items:center; gap:var(--sp2)}
+.grow{flex:1 1 auto; min-width:0}
+.muted{color:var(--ink3)}
+.empty{
+  color:var(--ink3); font-size:var(--fs-sm); padding:var(--sp3) 0;
+  border-top:1px dashed var(--line); text-align:center;
+}
+
+/* ---------- Kopf des Tages ---------- */
+.dayhead{display:flex; flex-direction:column; gap:var(--sp3)}
+.dayhead h1{font-size:var(--fs-xl); line-height:1.02; letter-spacing:-.03em}
+.greet{color:var(--ink2); font-size:var(--fs-lg); font-weight:500}
+.headtop{display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp3); flex-wrap:wrap}
+
+/* Tagesbogen */
+.arc{position:relative; width:100%; max-width:520px}
+.arc svg{display:block; width:100%; height:auto; overflow:visible}
+.arc-path{fill:none; stroke:var(--line); stroke-width:1.5; stroke-dasharray:3 5}
+.arc-done{fill:none; stroke:var(--accent); stroke-width:1.75; opacity:.75}
+.arc-horizon{stroke:var(--line); stroke-width:1}
+.arc-body{fill:var(--accent)}
+.arc-labels{display:flex; justify-content:space-between; gap:var(--sp2); margin-top:.35rem}
+.arc-labels span{font-family:var(--mono); font-size:var(--fs-xs); color:var(--ink3)}
+.arc-note{color:var(--ink2); font-size:var(--fs-sm)}
+
+/* Fortschrittsring */
+.ring{display:flex; align-items:center; gap:.7rem}
+.ring svg{width:52px; height:52px; flex:0 0 52px; transform:rotate(-90deg)}
+.ring circle{fill:none; stroke-width:5; stroke-linecap:round}
+.ring .bg{stroke:var(--line)}
+.ring .fg{stroke:var(--accent); transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1)}
+.ring-txt strong{font-family:var(--mono); font-size:1.05rem; display:block; line-height:1.2}
+.ring-txt span{font-size:var(--fs-xs); color:var(--ink3)}
+
+/* ---------- Eingaben ---------- */
+.field{
+  display:flex; align-items:center; gap:var(--sp2);
+  background:var(--surf2); border:1px solid var(--line);
+  border-radius:var(--r2); padding:.55rem .7rem;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.field:focus-within{border-color:var(--accent2); box-shadow:0 0 0 3px var(--accent-soft)}
+.field input{
+  flex:1 1 auto; min-width:0; background:none; border:none; outline:none;
+  padding:.15rem 0; font-size:var(--fs-md);
+}
+.field input::placeholder{color:var(--ink3)}
+.field > svg{width:18px; height:18px; color:var(--ink3); flex:0 0 18px}
+.field.mono input{font-family:var(--mono); font-size:var(--fs-sm)}
+.inputs{display:flex; flex-direction:column; gap:var(--sp2)}
+.inputs-row{display:flex; gap:var(--sp2); flex-wrap:wrap}
+.inputs-row .field{flex:1 1 190px}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.4rem;
+  padding:.55rem .95rem; border-radius:var(--r2);
+  background:var(--accent); color:var(--on-accent); font-weight:600; font-size:var(--fs-sm);
+  border:1px solid transparent; white-space:nowrap;
+  transition:transform .12s ease, filter .18s ease;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:16px; height:16px}
+.btn.ghost{background:none; color:var(--ink2); border-color:var(--line)}
+.btn.ghost:hover{background:var(--surf3); color:var(--ink)}
+.btn.quiet{background:none; color:var(--ink3); padding:.3rem .5rem; font-weight:500}
+.btn.quiet:hover{color:var(--ink); background:var(--surf3)}
+.btn.danger{background:none; color:var(--warn); border-color:var(--line)}
+
+/* ---------- Listenzeilen ---------- */
+.items{display:flex; flex-direction:column; gap:0; margin:0; padding:0; list-style:none}
+.item{
+  display:flex; align-items:flex-start; gap:.65rem;
+  padding:.55rem .5rem; border-radius:var(--r1);
+  transition:background .16s ease;
+}
+.item:hover{background:var(--surf3)}
+.item + .item{border-top:1px solid var(--line2)}
+.check{
+  flex:0 0 21px; width:21px; height:21px; margin-top:.12rem;
+  border:1.75px solid var(--ink3); border-radius:7px;
+  display:grid; place-items:center; color:transparent;
+  transition:background .16s ease, border-color .16s ease, color .16s ease;
+}
+.check svg{width:13px; height:13px}
+.check:hover{border-color:var(--accent)}
+.item.done .check{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.item-body{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:.1rem}
+.item-text{word-break:break-word; cursor:text; border-radius:4px}
+.item.done .item-text{color:var(--ink3); text-decoration:line-through; text-decoration-thickness:1px}
+.item-meta{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; font-size:var(--fs-xs); color:var(--ink3)}
+.item-meta a{display:inline-flex; align-items:center; gap:.25rem; color:var(--accent); text-decoration:none; font-weight:600}
+.item-meta a:hover{text-decoration:underline}
+.item-meta a svg{width:12px; height:12px}
+.item-edit{
+  flex:1 1 auto; width:100%; background:var(--surf2); border:1px solid var(--accent2);
+  border-radius:var(--r1); padding:.25rem .45rem; outline:none; font-size:var(--fs-md);
+}
+.item-acts{display:flex; align-items:center; gap:.1rem; opacity:0; transition:opacity .16s ease}
+.item:hover .item-acts,.item:focus-within .item-acts{opacity:1}
+.iconbtn{
+  width:30px; height:30px; border-radius:8px; display:grid; place-items:center;
+  color:var(--ink3); transition:color .16s ease, background .16s ease;
+}
+.iconbtn svg{width:16px; height:16px}
+.iconbtn:hover{color:var(--ink); background:var(--surf3)}
+.iconbtn.on{color:var(--star)}
+.item.star .item-acts{opacity:1}
+@media (hover:none){.item-acts{opacity:1}}
+
+.chip{
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-family:var(--mono); font-size:var(--fs-xs);
+  padding:.16rem .45rem; border-radius:7px;
+  background:var(--accent-soft); color:var(--accent); font-weight:500;
+}
+.chip.plain{background:var(--surf3); color:var(--ink3)}
+
+/* Termine */
+.ev{display:flex; gap:.75rem; align-items:stretch; padding:.5rem; border-radius:var(--r1)}
+.ev:hover{background:var(--surf3)}
+.ev-time{
+  flex:0 0 56px; font-family:var(--mono); font-size:var(--fs-sm); font-weight:500;
+  color:var(--accent); padding-top:.1rem;
+}
+.ev-title{font-weight:600}
+.ev-note{font-size:var(--fs-sm); color:var(--ink3)}
+.ev-mark{flex:0 0 3px; border-radius:99px; background:var(--accent); opacity:.5}
+.ev + .ev{border-top:1px solid var(--line2)}
+
+/* ---------- Kalender ---------- */
+.cal-head{display:flex; align-items:center; justify-content:space-between; gap:var(--sp2); margin-bottom:var(--sp3)}
+.cal-title{font-family:var(--display); font-size:var(--fs-lg); font-weight:700}
+.cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px}
+.cal-dow{
+  text-align:center; font-family:var(--mono); font-size:var(--fs-xs);
+  color:var(--ink3); padding-bottom:.35rem; letter-spacing:.06em;
+}
+.cal-day{
+  position:relative; aspect-ratio:1/1; border-radius:var(--r1);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.22rem;
+  font-family:var(--mono); font-size:var(--fs-sm); color:var(--ink2);
+  border:1px solid transparent;
+  transition:background .16s ease, color .16s ease, border-color .16s ease;
+}
+.cal-day:hover{background:var(--surf3)}
+.cal-day.out{color:var(--ink3); opacity:.42}
+.cal-day.today{border-color:var(--accent); color:var(--ink); font-weight:500}
+.cal-day.sel{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.cal-day.sel .dot{background:var(--on-accent)}
+.dots{display:flex; gap:2.5px; height:5px; align-items:center}
+.dot{width:5px; height:5px; border-radius:99px; background:var(--accent); opacity:.85}
+.dot.task{background:var(--ink3)}
+.cal-layout{display:grid; grid-template-columns:1fr; gap:var(--sp3)}
+
+/* ---------- Segmente ---------- */
+.seg{display:inline-flex; gap:2px; padding:3px; border-radius:var(--r2); background:var(--surf2); border:1px solid var(--line)}
+.seg button{
+  padding:.4rem .85rem; border-radius:11px; font-size:var(--fs-sm); font-weight:600; color:var(--ink3);
+  transition:background .16s ease,color .16s ease;
+}
+.seg button[aria-selected="true"]{background:var(--accent); color:var(--on-accent)}
+
+/* ---------- Briefing ---------- */
+.news{display:flex; flex-direction:column; gap:var(--sp3)}
+.news-item{display:flex; gap:.85rem; align-items:flex-start}
+.news-kind{
+  flex:0 0 78px; margin-top:.3rem; font-family:var(--mono); font-size:.62rem;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--accent);
+}
+.news-body h3{font-size:1.02rem; font-weight:700; font-family:var(--body); letter-spacing:0}
+.news-body p{font-size:var(--fs-sm); color:var(--ink2); margin-top:.15rem}
+.news-src{font-size:var(--fs-xs); color:var(--ink3); margin-top:.25rem}
+.news-item + .news-item{border-top:1px solid var(--line2); padding-top:var(--sp3)}
+/* Ältere Meldungen treten zurück, ohne zu verschwinden. */
+.news-item.alt{opacity:.5}
+.news-item.alt:hover,.news-item.alt:focus-within{opacity:1}
+.news-item .stamp{font-family:var(--mono); font-size:.62rem; color:var(--ink3)}
+.news-trenner{
+  display:flex; align-items:center; gap:.6rem; margin-top:var(--sp2);
+  font-family:var(--mono); font-size:var(--fs-xs); color:var(--ink3);
+  text-transform:uppercase; letter-spacing:.1em;
+}
+.news-trenner::after{content:""; flex:1 1 auto; height:1px; background:var(--line)}
+.themen{display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:var(--sp3)}
+.thema{
+  font-size:var(--fs-xs); padding:.32rem .7rem; border-radius:99px;
+  border:1px solid var(--line); color:var(--ink2); background:var(--surf2); font-weight:600;
+  transition:background .16s ease, color .16s ease, border-color .16s ease;
+}
+.thema:hover{border-color:var(--accent); color:var(--ink)}
+.thema[aria-pressed="true"]{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.glance{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:var(--sp2)}
+.glance-cell{background:var(--surf2); border:1px solid var(--line2); border-radius:var(--r2); padding:.7rem .8rem}
+.glance-cell strong{display:block; font-family:var(--mono); font-size:1.5rem; line-height:1.1; color:var(--ink)}
+.glance-cell span{font-size:var(--fs-xs); color:var(--ink3)}
+.stale{
+  display:flex; gap:.5rem; align-items:flex-start;
+  background:var(--accent-soft); border-radius:var(--r2); padding:.6rem .75rem;
+  font-size:var(--fs-sm); color:var(--ink2);
+}
+.stale svg{width:17px; height:17px; flex:0 0 17px; color:var(--accent); margin-top:.15rem}
+
+/* ---------- Sync + Dialog ---------- */
+.sync{display:inline-flex; align-items:center; gap:.4rem; font-size:var(--fs-xs); color:var(--ink3)}
+.sync-dot{width:7px; height:7px; border-radius:99px; background:var(--good); flex:0 0 7px}
+.sync[data-state="saving"] .sync-dot{background:var(--warn); animation:pulse 1.1s ease-in-out infinite}
+.sync[data-state="local"] .sync-dot{background:var(--ink3)}
+.sync[data-state="error"] .sync-dot{background:var(--warn)}
+@keyframes pulse{50%{opacity:.35}}
+dialog{
+  border:none; padding:0; background:none; max-width:min(460px,92vw); width:100%;
+  color:var(--ink);
+}
+dialog::backdrop{background:rgba(8,12,22,.55)}
+.sheet{
+  background:var(--surf); border:1px solid var(--line); border-radius:var(--r3);
+  padding:var(--sp4); box-shadow:var(--shadow-lift); display:flex; flex-direction:column; gap:var(--sp3);
+  backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+}
+.sheet h2{font-size:var(--fs-lg)}
+.sheet-row{display:flex; flex-direction:column; gap:.35rem}
+.sheet-row label{font-size:var(--fs-sm); font-weight:600}
+.sheet-row .hint{font-size:var(--fs-xs); color:var(--ink3)}
+.sheet-acts{display:flex; gap:var(--sp2); flex-wrap:wrap; justify-content:flex-end}
+.toast{
+  position:fixed; left:50%; bottom:calc(5.5rem + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(8px);
+  background:var(--ink); color:var(--sky3); padding:.55rem 1rem; border-radius:99px;
+  font-size:var(--fs-sm); font-weight:500; z-index:60; opacity:0; pointer-events:none;
+  transition:opacity .22s ease, transform .22s ease; box-shadow:var(--shadow-lift);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+.view[hidden]{display:none}
+.view{animation:rise .32s cubic-bezier(.2,.7,.3,1) both}
+@keyframes rise{from{opacity:0; transform:translateY(7px)}}
+
+/* ---------- Pfeile zum Tageswechsel ---------- */
+.dayarrow{
+  position:fixed; top:50%; margin-top:-32px;
+  width:42px; height:64px; border-radius:var(--r2);
+  display:grid; place-items:center; z-index:35;
+  background:var(--surf); border:1px solid var(--line); color:var(--ink2);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  opacity:0; pointer-events:none;
+  transition:opacity .24s ease;
+}
+.dayarrow svg{width:20px; height:20px}
+.dayarrow.left{left:10px}
+.dayarrow.right{right:10px}
+.dayarrow.show{opacity:.6; pointer-events:auto}
+.dayarrow.show:hover{opacity:1; color:var(--ink)}
+.backtoday{align-self:flex-start}
+
+/* ---------- Routine ---------- */
+.routine-meta{display:flex; align-items:center; gap:.5rem; font-size:var(--fs-xs); color:var(--ink3)}
+.routine-bar{flex:1 1 auto; height:4px; border-radius:99px; background:var(--line); overflow:hidden; max-width:140px}
+.routine-bar i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ---------- Zettel ---------- */
+.shot{display:flex; align-items:center; gap:var(--sp2); flex-wrap:wrap}
+.photos{display:grid; grid-template-columns:repeat(auto-fill,minmax(82px,1fr)); gap:var(--sp2); margin-top:var(--sp3)}
+.photo{
+  position:relative; aspect-ratio:3/4; padding:0; overflow:hidden;
+  border-radius:var(--r2); border:1px solid var(--line); background:var(--surf2);
+}
+.photo img{width:100%; height:100%; object-fit:cover; display:block}
+.photo span{
+  position:absolute; left:0; right:0; bottom:0; padding:.16rem .3rem;
+  font-family:var(--mono); font-size:.6rem; color:#F4F6FB;
+  background:linear-gradient(180deg,rgba(6,10,20,0) 0%,rgba(6,10,20,.72) 60%);
+}
+.viewer{max-width:min(540px,94vw)}
+.viewer img{width:100%; display:block; border-radius:var(--r2); background:#0B1020}
+
+/* ---------- Optimus ---------- */
+.chat{display:flex; flex-direction:column; gap:var(--sp2)}
+.msg{display:flex; gap:.6rem; align-items:flex-start}
+.msg .who{
+  flex:0 0 30px; width:30px; height:30px; border-radius:50%;
+  display:grid; place-items:center; background:var(--accent); color:var(--on-accent);
+}
+.msg .who svg{width:17px; height:17px}
+.msg.me{flex-direction:row-reverse}
+.msg.me .who{background:var(--surf3); color:var(--ink3)}
+.bubble{
+  background:var(--surf2); border:1px solid var(--line2);
+  border-radius:var(--r2); padding:.6rem .8rem; max-width:min(52ch,84%);
+  font-size:var(--fs-sm); line-height:1.5;
+}
+.msg.me .bubble{background:var(--accent-soft); border-color:transparent; color:var(--ink)}
+.bubble p + p{margin-top:.45rem}
+.bubble strong{font-weight:600}
+.bubble ul{margin:.4rem 0 0; padding-left:1.05rem; display:flex; flex-direction:column; gap:.15rem}
+.bubble .stamp{font-family:var(--mono); color:var(--ink3); font-size:var(--fs-xs)}
+.chips{display:flex; gap:.4rem; flex-wrap:wrap; margin-top:var(--sp3)}
+.chip-btn{
+  font-size:var(--fs-xs); padding:.32rem .65rem; border-radius:99px;
+  border:1px solid var(--line); color:var(--ink2); background:var(--surf2);
+  transition:border-color .16s ease, color .16s ease;
+}
+.chip-btn:hover{border-color:var(--accent); color:var(--ink)}
+.mic{flex:0 0 32px; width:32px; height:32px; border:1px solid var(--line)}
+.mic.an{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.mic.an svg{animation:mikro 1.1s ease-in-out infinite}
+.mic.wach{border-color:var(--accent); color:var(--accent)}
+@keyframes mikro{50%{opacity:.4}}
+
+/* ---------- Zitat: steht frei unter dem Tageskopf, ohne Rahmen ---------- */
+.quote{display:flex; flex-direction:column; gap:.2rem; max-width:60ch}
+.quote p{
+  font-family:var(--display); font-weight:500; font-size:1.1rem;
+  line-height:1.45; letter-spacing:-.01em; color:var(--ink2);
+}
+.quote cite{font-style:normal; font-family:var(--mono); font-size:var(--fs-xs); color:var(--ink3)}
+
+/* ---------- Breiter Bildschirm ---------- */
+@media (min-width:860px){
+  .rail{display:flex}
+  .tabbar,.mhead{display:none}
+  .main{padding:var(--sp5) var(--sp4)}
+  .today-grid{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:var(--sp4); align-items:start}
+  .cal-layout{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+  .dayarrow.left{left:calc(216px + 12px)}
+}
+@media (hover:none){
+  /* Ohne Mauszeiger gibt es kein Heranfahren an den Rand — dann stehen die Pfeile fest da. */
+  .dayarrow{opacity:.45; pointer-events:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+}
+</style>
+<svg class="sr" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path>
+  </symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path>
+  </symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 8h14l-1.2 11.2A2 2 0 0 1 15.8 21H8.2a2 2 0 0 1-2-1.8L5 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+  </symbol>
+  <symbol id="i-news" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 5h12a1 1 0 0 1 1 1v12a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V5Z"></path><path d="M17 9h3v9a2 2 0 0 1-2 2M7 9h6M7 13h6M7 17h4"></path>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 12.5 9.5 17.5 19.5 6.5"></path>
+  </symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8L12 3.5Z"></path>
+  </symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M10 11v6M14 11v6"></path>
+  </symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.8-2.8a4 4 0 0 0-5.7-5.7L11.9 6.4"></path><path d="M13.5 10.5a4 4 0 0 0-5.7 0L5 13.3a4 4 0 0 0 5.7 5.7l1.4-1.4"></path>
+  </symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 4h6v6M20 4l-8.5 8.5"></path><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"></path>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 5v14M5 12h14"></path>
+  </symbol>
+  <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 5.5 8 12l6.5 6.5"></path>
+  </symbol>
+  <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.5 5.5 16 12l-6.5 6.5"></path>
+  </symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3.2"></circle>
+    <path d="M19.4 14.4a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3.2a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3.2a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.3 1.4Z"></path>
+  </symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.8v.4"></path>
+  </symbol>
+  <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9V5m0 4h4"></path><path d="M4.6 13a7.5 7.5 0 1 0 1.4-5"></path>
+  </symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 8h3l1.4-2.2a1 1 0 0 1 .85-.47h5.5a1 1 0 0 1 .85.47L17 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a1 1 0 0 1 1-1Z"></path>
+    <circle cx="12" cy="13.5" r="3.4"></circle>
+  </symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+    <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6"></path>
+  </symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7L4.5 10.9 10.1 9 12 3.5Z"></path>
+    <path d="M18.5 4.2v2.6M19.8 5.5h-2.6"></path>
+  </symbol>
+  <symbol id="i-speak" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6.5 8.5H3.5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h3L11 19V5Z"></path>
+    <path d="M15.5 9.2a4 4 0 0 1 0 5.6M18.4 6.4a8 8 0 0 1 0 11.2"></path>
+  </symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"></path>
+  </symbol>
+</svg>
+
+<div class="sky" aria-hidden="true"></div>
+<div class="glow" aria-hidden="true"></div>
+
+<div class="shell">
+  <nav class="rail" aria-label="Bereiche">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5.2" fill="currentColor" opacity=".9"></circle><circle cx="12" cy="12" r="9.4" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".45"></circle></svg>
+      <span class="brand-name">Clarity</span>
+    </div>
+    <button class="navbtn" data-view="today" aria-current="page"><svg aria-hidden="true"><use href="#i-sun"></use></svg>Heute<span class="badge" id="badge-today"></span></button>
+    <button class="navbtn" data-view="cal"><svg aria-hidden="true"><use href="#i-cal"></use></svg>Kalender<span class="badge" id="badge-cal"></span></button>
+    <button class="navbtn" data-view="lists"><svg aria-hidden="true"><use href="#i-bag"></use></svg>Listen<span class="badge" id="badge-lists"></span></button>
+    <button class="navbtn" data-view="brief"><svg aria-hidden="true"><use href="#i-news"></use></svg>Optimus</button>
+    <div class="rail-foot">
+      <span class="sync" id="sync" data-state="local"><span class="sync-dot"></span><span id="sync-txt">Startet…</span></span>
+      <button class="btn quiet" id="open-settings" style="justify-content:flex-start"><svg aria-hidden="true"><use href="#i-gear"></use></svg>Einstellungen</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="mhead">
+      <div class="row mbrand" style="gap:.45rem">
+        <svg class="brand-mark" style="width:20px;height:20px;flex:0 0 20px" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5.2" fill="currentColor" opacity=".9"></circle><circle cx="12" cy="12" r="9.4" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".45"></circle></svg>
+        <span class="brand-name" style="font-size:1rem">Clarity</span>
+      </div>
+      <div class="row" style="gap:.5rem">
+        <span class="sync" id="sync-m" data-state="local"><span class="sync-dot"></span><span id="sync-txt-m">…</span></span>
+        <button class="iconbtn" id="open-settings-m" aria-label="Einstellungen"><svg aria-hidden="true"><use href="#i-gear"></use></svg></button>
+      </div>
+    </div>
+
+    <div class="wrap">
+
+      <!-- ============ HEUTE ============ -->
+      <section class="view" id="v-today" aria-label="Heute">
+        <div class="stack">
+          <header class="dayhead">
+            <div class="headtop">
+              <div>
+                <p class="eyebrow" id="t-weekday">—</p>
+                <h1 id="t-date">—</h1>
+                <p class="greet" id="t-greet"></p>
+                <button class="btn quiet backtoday" id="t-back-today" hidden style="margin-top:.3rem"><svg aria-hidden="true"><use href="#i-back"></use></svg>Zurück zu heute</button>
+              </div>
+              <div class="ring" id="t-ring" hidden>
+                <svg viewBox="0 0 44 44" aria-hidden="true">
+                  <circle class="bg" cx="22" cy="22" r="18"></circle>
+                  <circle class="fg" id="t-ring-fg" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"></circle>
+                </svg>
+                <span class="ring-txt"><strong id="t-ring-num">0/0</strong><span>erledigt</span></span>
+              </div>
+            </div>
+            <div class="arc" id="t-arc">
+              <svg viewBox="0 0 520 92" role="img" aria-labelledby="arc-title">
+                <title id="arc-title">Tagesbogen: Stand der Sonne zwischen Auf- und Untergang</title>
+                <line class="arc-horizon" x1="0" y1="78" x2="520" y2="78"></line>
+                <path class="arc-path" id="arc-full" d="M14 78 A 246 58 0 0 1 506 78"></path>
+                <path class="arc-done" id="arc-done" d="M14 78 A 246 58 0 0 1 506 78"></path>
+                <circle class="arc-body" id="arc-dot" cx="14" cy="78" r="6"></circle>
+              </svg>
+              <div class="arc-labels">
+                <span id="arc-rise">–</span>
+                <span class="arc-note" id="arc-note"></span>
+                <span id="arc-set">–</span>
+              </div>
+            </div>
+          </header>
+
+          <div class="quote" id="t-quote-card">
+            <p id="t-quote">—</p>
+            <cite id="t-quote-src">—</cite>
+          </div>
+
+          <div class="today-grid">
+            <div class="stack">
+              <div class="seg" id="t-pane-seg" role="tablist" aria-label="Aufgaben oder Routine" style="align-self:flex-start">
+                <button role="tab" id="pane-tasks" aria-selected="true" data-pane="tasks">Aufgaben</button>
+                <button role="tab" id="pane-routine" aria-selected="false" data-pane="routine">Routine</button>
+              </div>
+
+              <section class="card" id="t-tasks-card">
+                <div class="card-head"><h2>Aufgaben</h2><span class="eyebrow" id="t-count"></span></div>
+                <div class="field" style="margin-bottom:var(--sp3)">
+                  <svg aria-hidden="true"><use href="#i-plus"></use></svg>
+                  <input id="t-input" type="text" placeholder="Was steht heute an?" autocomplete="off" enterkeyhint="done" aria-label="Neue Aufgabe für heute">
+                </div>
+                <ul class="items" id="t-list"></ul>
+                <div id="t-empty" class="empty" hidden>Noch nichts notiert. Schreib die erste Sache auf, die dir im Kopf herumgeht.</div>
+                <div id="t-donewrap" hidden style="margin-top:var(--sp3)">
+                  <button class="btn quiet" id="t-toggle-done"></button>
+                  <ul class="items" id="t-donelist" hidden></ul>
+                </div>
+              </section>
+
+              <section class="card" id="t-routine">
+                <div class="card-head">
+                  <h2>Routine</h2>
+                  <span class="routine-meta">
+                    <span class="routine-bar"><i id="t-routine-bar" style="width:0%"></i></span>
+                    <span class="num" id="t-routine-num">0/0</span>
+                  </span>
+                </div>
+                <ul class="items" id="t-routine-list"></ul>
+                <div id="t-routine-empty" class="empty" hidden>Noch keine Routine. Trag ein, was jeden Tag dran ist — es steht morgen früh wieder unangehakt hier.</div>
+                <div class="field" style="margin-top:var(--sp3)">
+                  <svg aria-hidden="true"><use href="#i-plus"></use></svg>
+                  <input id="t-routine-input" type="text" placeholder="Jeden Tag: z. B. Vitamine nehmen" autocomplete="off" aria-label="Neue Routine">
+                </div>
+              </section>
+
+              <section class="card tight" id="t-carry" hidden>
+                <div class="card-head" style="margin-bottom:var(--sp2)">
+                  <h2 style="font-size:1.05rem">Offen von früher</h2>
+                  <button class="btn quiet" id="t-carry-all">Alles auf heute</button>
+                </div>
+                <ul class="items" id="t-carrylist"></ul>
+              </section>
+            </div>
+
+            <div class="stack">
+              <section class="card">
+                <div class="card-head"><h2>Termine heute</h2></div>
+                <div id="t-events"></div>
+                <div id="t-events-empty" class="empty" hidden>Keine Termine. Ein freier Tag im Kalender.</div>
+                <button class="btn ghost" id="t-add-ev" style="margin-top:var(--sp3); width:100%"><svg aria-hidden="true"><use href="#i-cal"></use></svg>Termin eintragen</button>
+              </section>
+
+              <section class="card">
+                <div class="card-head"><h2>Zettel</h2><span class="eyebrow" id="t-photo-count"></span></div>
+                <div class="shot">
+                  <button class="btn ghost" id="t-shoot"><svg aria-hidden="true"><use href="#i-cam"></use></svg>Zettel abfotografieren</button>
+                  <input type="file" id="t-photo-file" accept="image/*" capture="environment" hidden>
+                </div>
+                <p class="muted" id="t-photo-hint" style="font-size:var(--fs-xs); margin-top:.5rem">Das Bild bleibt an diesem Tag hängen. Zum Eintragen tippst du es an.</p>
+                <div class="photos" id="t-photos"></div>
+              </section>
+
+              <section class="card tight">
+                <div class="card-head" style="margin-bottom:var(--sp2)"><h2 style="font-size:1.05rem">Als Nächstes</h2></div>
+                <div id="t-next" class="muted" style="font-size:var(--fs-sm)"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ KALENDER ============ -->
+      <section class="view" id="v-cal" hidden aria-label="Kalender">
+        <div class="cal-layout">
+          <section class="card">
+            <div class="cal-head">
+              <button class="iconbtn" id="cal-prev" aria-label="Voriger Monat"><svg aria-hidden="true"><use href="#i-left"></use></svg></button>
+              <span class="cal-title" id="cal-title">—</span>
+              <div class="row" style="gap:.15rem">
+                <button class="btn quiet" id="cal-today">Heute</button>
+                <button class="iconbtn" id="cal-next" aria-label="Nächster Monat"><svg aria-hidden="true"><use href="#i-right"></use></svg></button>
+              </div>
+            </div>
+            <div class="cal-grid" id="cal-dow" aria-hidden="true"></div>
+            <div class="cal-grid" id="cal-grid" role="grid"></div>
+            <p class="eyebrow" style="margin-top:var(--sp3); display:flex; gap:.9rem; align-items:center; flex-wrap:wrap">
+              <span style="display:inline-flex;align-items:center;gap:.3rem"><span class="dot"></span>Termin</span>
+              <span style="display:inline-flex;align-items:center;gap:.3rem"><span class="dot task"></span>Offene Aufgabe</span>
+            </p>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h2 id="cal-day-title">—</h2></div>
+            <div class="stack">
+              <div>
+                <p class="eyebrow" style="margin-bottom:.4rem">Termine</p>
+                <div id="cal-events"></div>
+                <div id="cal-events-empty" class="empty" hidden>Keine Termine an diesem Tag.</div>
+              </div>
+              <div class="inputs">
+                <div class="inputs-row">
+                  <div class="field" style="flex:2 1 200px">
+                    <svg aria-hidden="true"><use href="#i-cal"></use></svg>
+                    <input id="cal-ev-title" type="text" placeholder="Termin" autocomplete="off" aria-label="Titel des Termins">
+                  </div>
+                  <div class="field mono" style="flex:0 0 118px">
+                    <input id="cal-ev-time" type="time" aria-label="Uhrzeit">
+                  </div>
+                </div>
+                <div class="field">
+                  <svg aria-hidden="true"><use href="#i-info"></use></svg>
+                  <input id="cal-ev-note" type="text" placeholder="Notiz oder Ort (optional)" autocomplete="off" aria-label="Notiz zum Termin">
+                </div>
+                <button class="btn" id="cal-ev-add"><svg aria-hidden="true"><use href="#i-plus"></use></svg>Termin hinzufügen</button>
+              </div>
+              <div id="cal-photo-wrap" hidden>
+                <p class="eyebrow" style="margin-bottom:.4rem">Zettel</p>
+                <div class="photos" id="cal-photos" style="margin-top:0"></div>
+              </div>
+              <div>
+                <p class="eyebrow" style="margin-bottom:.4rem">Aufgaben an diesem Tag</p>
+                <ul class="items" id="cal-tasks"></ul>
+                <div class="field" style="margin-top:var(--sp2)">
+                  <svg aria-hidden="true"><use href="#i-plus"></use></svg>
+                  <input id="cal-task-input" type="text" placeholder="Aufgabe für diesen Tag" autocomplete="off" aria-label="Aufgabe für den gewählten Tag">
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ LISTEN ============ -->
+      <section class="view" id="v-lists" hidden aria-label="Listen">
+        <div class="stack">
+          <div class="row" style="justify-content:space-between; flex-wrap:wrap">
+            <div class="seg" role="tablist" aria-label="Listenart">
+              <button role="tab" id="seg-shop" aria-selected="true" data-list="shop">Einkaufsliste</button>
+              <button role="tab" id="seg-wish" aria-selected="false" data-list="wish">Wunschliste</button>
+            </div>
+            <button class="btn quiet" id="l-clear-done">Erledigte entfernen</button>
+          </div>
+
+          <section class="card">
+            <div class="card-head"><h2 id="l-title">Einkaufsliste</h2><span class="eyebrow" id="l-count"></span></div>
+            <div class="inputs" style="margin-bottom:var(--sp3)">
+              <div class="inputs-row">
+                <div class="field" style="flex:2 1 220px">
+                  <svg aria-hidden="true"><use href="#i-plus"></use></svg>
+                  <input id="l-text" type="text" placeholder="Was?" autocomplete="off" aria-label="Bezeichnung">
+                </div>
+                <div class="field" id="l-price-field" style="flex:0 0 118px" hidden>
+                  <input id="l-price" type="text" inputmode="decimal" placeholder="Preis" autocomplete="off" aria-label="Preis">
+                </div>
+              </div>
+              <div class="field">
+                <svg aria-hidden="true"><use href="#i-link"></use></svg>
+                <input id="l-url" type="url" placeholder="Link einfügen (optional)" autocomplete="off" aria-label="Link">
+              </div>
+              <button class="btn" id="l-add"><svg aria-hidden="true"><use href="#i-plus"></use></svg>Hinzufügen</button>
+            </div>
+            <ul class="items" id="l-list"></ul>
+            <div id="l-empty" class="empty" hidden></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ BRIEFING ============ -->
+      <section class="view" id="v-brief" hidden aria-label="Briefing">
+        <div class="stack">
+          <section class="card" id="optimus">
+            <div class="card-head">
+              <h2>Optimus</h2>
+              <div class="row" style="gap:.5rem">
+                <span class="eyebrow" id="b-time">—</span>
+                <button class="btn ghost" id="b-speak"><svg aria-hidden="true"><use href="#i-speak"></use></svg><span id="b-speak-txt">Vorlesen</span></button>
+              </div>
+            </div>
+            <div class="chat" id="op-chat"></div>
+            <div class="chips" id="op-chips"></div>
+            <div class="field" style="margin-top:var(--sp3)">
+              <svg aria-hidden="true"><use href="#i-spark"></use></svg>
+              <input id="op-input" type="text" placeholder="Frag mich etwas — oder sag mir, was du eintragen willst" autocomplete="off" enterkeyhint="send" aria-label="Frage an Optimus">
+              <button class="iconbtn mic" id="op-mic" type="button" aria-label="Sprechen" hidden><svg aria-hidden="true"><use href="#i-mic"></use></svg></button>
+            </div>
+            <p class="muted" id="op-mic-hint" hidden style="font-size:var(--fs-xs); margin-top:.4rem"></p>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h2>Auf einen Blick</h2>
+            </div>
+            <div class="glance">
+              <div class="glance-cell"><strong id="g-tasks">0</strong><span>offene Aufgaben heute</span></div>
+              <div class="glance-cell"><strong id="g-events">0</strong><span>Termine heute</span></div>
+              <div class="glance-cell"><strong id="g-carry">0</strong><span>Reste von früher</span></div>
+              <div class="glance-cell"><strong id="g-shop">0</strong><span>Dinge einzukaufen</span></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h2>Was heute passiert ist</h2>
+              <span class="eyebrow" id="b-stamp">—</span>
+            </div>
+            <div class="stale" id="b-stale" hidden>
+              <svg aria-hidden="true"><use href="#i-info"></use></svg>
+              <span id="b-stale-txt"></span>
+            </div>
+            <div class="themen" id="b-themen" role="group" aria-label="Themen" style="margin-top:var(--sp3)"></div>
+            <div class="news" id="b-news"></div>
+            <div id="b-news-leer" class="empty" hidden>Zu diesem Thema liegt gerade nichts vor.</div>
+          </section>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<button class="dayarrow left" id="day-prev" aria-label="Tag zurück"><svg aria-hidden="true"><use href="#i-left"></use></svg></button>
+<button class="dayarrow right" id="day-next" aria-label="Nächster Tag"><svg aria-hidden="true"><use href="#i-right"></use></svg></button>
+
+<nav class="tabbar" aria-label="Bereiche">
+  <button class="tab" data-view="today" aria-current="page"><svg aria-hidden="true"><use href="#i-sun"></use></svg>Heute</button>
+  <button class="tab" data-view="cal"><svg aria-hidden="true"><use href="#i-cal"></use></svg>Kalender</button>
+  <button class="tab" data-view="lists"><svg aria-hidden="true"><use href="#i-bag"></use></svg>Listen</button>
+  <button class="tab" data-view="brief"><svg aria-hidden="true"><use href="#i-news"></use></svg>Optimus</button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlg-settings" aria-labelledby="dlg-settings-title">
+  <form method="dialog" class="sheet">
+    <h2 id="dlg-settings-title">Einstellungen</h2>
+    <div class="sheet-row">
+      <label for="set-name">Dein Name</label>
+      <div class="field"><input id="set-name" type="text" placeholder="bleibt leer, wenn du magst" autocomplete="off"></div>
+      <span class="hint">Erscheint in der Begrüßung auf der Heute-Seite.</span>
+    </div>
+    <div class="sheet-row">
+      <label for="set-voice">Stimme fürs Vorlesen</label>
+      <div class="field"><select id="set-voice" style="flex:1 1 auto; background:none; border:none; outline:none; font:inherit; color:inherit"></select></div>
+      <div class="row">
+        <button type="button" class="btn ghost" id="set-voice-test">Probe hören</button>
+        <span class="hint grow" id="set-voice-hint">—</span>
+      </div>
+      <div class="row" style="margin-top:.35rem">
+        <label for="set-rate" class="hint" style="flex:0 0 auto">Tempo</label>
+        <input id="set-rate" type="range" min="0.7" max="1.2" step="0.04" value="0.94" class="grow" style="accent-color:var(--accent)">
+        <span class="hint num" id="set-rate-val" style="flex:0 0 3.5rem; text-align:right">normal</span>
+      </div>
+    </div>
+    <div class="sheet-row" id="set-wake-row" hidden>
+      <label for="set-wake">Auf „Hey Optimus" hören</label>
+      <div class="row">
+        <input id="set-wake" type="checkbox" style="width:18px; height:18px; accent-color:var(--accent)">
+        <span class="hint grow">Das Mikrofon läuft mit, solange Clarity offen und im Vordergrund ist. Kostet Akku — zum Abhaken genügt sonst der Mikrofonknopf.</span>
+      </div>
+    </div>
+    <div class="sheet-row">
+      <label>Speicherung</label>
+      <span class="hint" id="set-sync-hint">—</span>
+      <button type="button" class="btn ghost" id="set-sync-now" hidden style="align-self:flex-start; margin-top:.35rem">Jetzt abgleichen</button>
+    </div>
+    <div class="sheet-row">
+      <label>Sicherung</label>
+      <div class="row" style="flex-wrap:wrap">
+        <button type="button" class="btn ghost" id="set-export">Backup speichern</button>
+        <button type="button" class="btn ghost" id="set-import">Backup laden</button>
+        <input type="file" id="set-file" accept="application/json,.json" hidden>
+      </div>
+      <span class="hint">Eine JSON-Datei mit allen Aufgaben, Terminen und Listen.</span>
+    </div>
+    <div class="sheet-acts">
+      <button type="button" class="btn danger" id="set-wipe">Alles löschen</button>
+      <button class="btn" value="close">Fertig</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-copy" aria-labelledby="dlg-copy-title">
+  <div class="sheet">
+    <h2 id="dlg-copy-title">Sicherung zum Kopieren</h2>
+    <p class="hint" style="font-size:var(--fs-sm); color:var(--ink2)">Speichern ist in diesem Fenster nicht erlaubt. Kopier den Text und leg ihn irgendwo ab — in eine Notiz, eine Mail an dich selbst oder direkt in den Chat mit Claude.</p>
+    <textarea id="copy-text" readonly rows="7" style="width:100%; font-family:var(--mono); font-size:.72rem; background:var(--surf2); color:var(--ink); border:1px solid var(--line); border-radius:var(--r2); padding:.6rem; resize:vertical"></textarea>
+    <div class="sheet-acts">
+      <button type="button" class="btn ghost" id="copy-close">Schließen</button>
+      <button type="button" class="btn" id="copy-do">Alles kopieren</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-photo" aria-labelledby="dlg-photo-title">
+  <div class="sheet viewer">
+    <h2 id="dlg-photo-title">Zettel</h2>
+    <img id="photo-img" alt="Abfotografierter Zettel">
+    <div class="sheet-acts">
+      <button type="button" class="btn danger" id="photo-del">Löschen</button>
+      <button type="button" class="btn ghost" id="photo-close">Schließen</button>
+      <button type="button" class="btn" id="photo-toev">Termin daraus eintragen</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-event" aria-labelledby="dlg-event-title">
+  <form method="dialog" class="sheet">
+    <h2 id="dlg-event-title">Termin für heute</h2>
+    <div class="sheet-row">
+      <label for="qe-title">Was</label>
+      <div class="field"><input id="qe-title" type="text" placeholder="z. B. Zahnarzt" autocomplete="off"></div>
+    </div>
+    <div class="inputs-row">
+      <div class="sheet-row grow">
+        <label for="qe-date">Datum</label>
+        <div class="field mono"><input id="qe-date" type="date"></div>
+      </div>
+      <div class="sheet-row grow">
+        <label for="qe-time">Uhrzeit</label>
+        <div class="field mono"><input id="qe-time" type="time"></div>
+      </div>
+    </div>
+    <div class="sheet-row">
+      <label for="qe-note">Notiz</label>
+      <div class="field"><input id="qe-note" type="text" placeholder="optional" autocomplete="off"></div>
+    </div>
+    <img id="qe-shot" alt="Der abfotografierte Zettel" hidden style="width:100%; border-radius:var(--r2); display:block; background:#0B1020">
+    <p class="hint" id="qe-shot-hint" hidden style="font-size:var(--fs-xs); color:var(--ink3)">Datum und Uhrzeit vom Zettel oben eintragen — zum Vergrößern auf das Bild tippen.</p>
+    <div class="sheet-acts">
+      <button type="button" class="btn ghost" id="qe-cancel">Abbrechen</button>
+      <button type="button" class="btn" id="qe-save">Eintragen</button>
+    </div>
+  </form>
+</dialog>
+<script>
+(function(){
+'use strict';
+
+/* ========================================================
+   1. Kleine Helfer
+   ======================================================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+function h(tag, attrs, kids){
+  const n = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.slice(0,2) === 'on') n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  if (kids) for (const c of [].concat(kids)){
+    if (c == null || c === false) continue;
+    n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return n;
+}
+function icon(id){
+  const s = document.createElementNS(SVGNS, 'svg');
+  s.setAttribute('aria-hidden', 'true');
+  const u = document.createElementNS(SVGNS, 'use');
+  u.setAttribute('href', '#' + id);
+  s.appendChild(u);
+  return s;
+}
+function clear(node){ while (node.firstChild) node.removeChild(node.firstChild); }
+
+const DE_DAY = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DE_MON = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+function iso(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fromIso(s){
+  const p = String(s).split('-');
+  return new Date(+p[0], +p[1]-1, +p[2]);
+}
+function todayIso(){ return iso(new Date()); }
+function addDays(s, n){ const d = fromIso(s); d.setDate(d.getDate()+n); return iso(d); }
+function longDate(s){ const d = fromIso(s); return d.getDate() + '. ' + DE_MON[d.getMonth()]; }
+function relDay(s){
+  const t = todayIso();
+  if (s === t) return 'heute';
+  if (s === addDays(t, 1)) return 'morgen';
+  if (s === addDays(t, -1)) return 'gestern';
+  const d = fromIso(s);
+  return DE_DAY[d.getDay()].slice(0,2) + '. ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+}
+function hm(ms){
+  const m = Math.max(0, Math.round(ms/60000));
+  const hh = Math.floor(m/60), mm = m%60;
+  if (hh === 0) return mm + ' min';
+  if (mm === 0) return hh + ' h';
+  return hh + ' h ' + mm + ' min';
+}
+function clock(d){
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function safeUrl(raw){
+  if (!raw) return null;
+  let s = String(raw).trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)){
+    if (/^[\w.-]+\.[a-z]{2,}([/?#]|$)/i.test(s)) s = 'https://' + s;
+    else return null;
+  }
+  try{
+    const u = new URL(s);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u : null;
+  }catch(e){ return null; }
+}
+
+let toastTimer = 0;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ========================================================
+   2. Zustand — lokal sofort, in der Wolke gebuendelt
+   Jeder Eintrag traegt seinen Zeitstempel (u). Beim
+   Zusammenfuehren gewinnt pro Eintrag der juengere Stand,
+   damit Handy und Rechner sich nicht gegenseitig ueberschreiben.
+   ======================================================== */
+const KEY = 'clarity.state.v1';
+
+/* ---------------------------------------------------------------
+   STARTBESTAND
+   Eine neue Fassung der App wird als neue Version veroeffentlicht —
+   die Datendatei der alten Version ist dann nicht mehr da. Damit
+   dabei nichts verlorengeht, wird der letzte bekannte Stand hier
+   fest eingebacken. Er greift nur, wenn sonst nirgends etwas liegt,
+   und ueberschreibt niemals vorhandene Eintraege.
+   --------------------------------------------------------------- */
+const SEED = null;
+let seedUsed = false;
+
+let S = { v:1, recs:{} };
+let cloud = null;
+let pushTimer = 0;
+let syncState = 'local';
+let cloudFound = null;   /* wie viele Eintraege beim Start aus der Wolke kamen */
+let lastPush = '';
+let bootCount = 0;       /* Zahl der Eintraege beim Oeffnen — Schutz vor Leerlauf */
+let wipeAbsicht = false; /* nur nach ausdruecklichem "Alles löschen" darf leer werden */
+
+function liveCount(recs){
+  let n = 0;
+  for (const k in (recs || {})){
+    const r = recs[k];
+    if (r && !r.d && r.t !== 'prefs') n++;
+  }
+  return n;
+}
+
+function uid(){ return 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function rec(id){ return S.recs[id]; }
+function live(){
+  const out = [];
+  for (const id in S.recs){ const r = S.recs[id]; if (r && !r.d) out.push([id, r]); }
+  return out;
+}
+function ofType(t){ return live().filter(x => x[1].t === t); }
+
+function put(id, patch){
+  const cur = S.recs[id] || {};
+  S.recs[id] = Object.assign({}, cur, patch, { u: Date.now() });
+  save();
+}
+function drop(id){
+  const cur = S.recs[id];
+  if (!cur) return;
+  S.recs[id] = { t: cur.t, d: 1, u: Date.now() };
+  save();
+}
+function add(obj){
+  const id = uid();
+  S.recs[id] = Object.assign({}, obj, { u: Date.now() });
+  save();
+  return id;
+}
+function prefs(){
+  return S.recs._prefs || (S.recs._prefs = { t:'prefs', name:'', u:0 });
+}
+
+function merge(a, b){
+  const out = {};
+  for (const k in (a||{})) out[k] = a[k];
+  for (const k in (b||{})){
+    const mine = out[k], theirs = b[k];
+    if (!mine || (theirs && (theirs.u||0) >= (mine.u||0))) out[k] = theirs;
+  }
+  return out;
+}
+function readLocal(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function save(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(S));
+  }catch(e){
+    /* Fast immer: der Speicher des Browsers ist voll — meist wegen der Zettel. */
+    toast('Der Speicher ist voll — bitte alte Zettel löschen');
+  }
+  render();
+  schedulePush();
+}
+
+function setSync(state, txt){
+  syncState = state;
+  for (const id of ['#sync','#sync-m']){
+    const n = $(id); if (n) n.dataset.state = state;
+  }
+  const a = $('#sync-txt'), b = $('#sync-txt-m');
+  if (a) a.textContent = txt;
+  if (b) b.textContent = state === 'ok' ? 'Gesichert' : txt;
+  const hint = $('#set-sync-hint');
+  if (hint){
+    /* Die haeufigste Verwirrung: zwei Fassungen offen, die nichts voneinander wissen.
+       Darum steht hier ausdruecklich, welche gerade laeuft. */
+    const aufGithub = /github\.io$/i.test(location.hostname);
+    const zeilen = [];
+    zeilen.push(aufGithub
+      ? 'Fassung: GitHub Pages — diese Fassung speichert grundsätzlich nur auf diesem Gerät.'
+      : 'Fassung: ' + location.hostname);
+    zeilen.push(cloud
+      ? 'Abgleich: aktiv. Was du hier änderst, steht auf jedem Gerät, das denselben Link öffnet.'
+      : 'Abgleich: aus. Alles bleibt in diesem Browser.');
+    if (cloud){
+      zeilen.push(cloudFound === null
+        ? 'Beim Öffnen lag noch nichts in der Wolke — das ist normal, solange von hier noch nichts gesichert wurde.'
+        : 'Beim Öffnen aus der Wolke geladen: ' + cloudFound + ' Einträge.');
+      if (lastPush) zeilen.push('Zuletzt gesichert: ' + lastPush + '.');
+    }
+    clear(hint);
+    zeilen.forEach(z => hint.appendChild(h('span', { text: z, style:'display:block' })));
+  }
+  const btn = $('#set-sync-now');
+  if (btn) btn.hidden = !cloud;
+}
+function schedulePush(){
+  if (!cloud) return;
+  clearTimeout(pushTimer);
+  setSync('saving', 'Sichert…');
+  pushTimer = setTimeout(pushCloud, 3500);
+}
+async function pushCloud(){
+  if (!cloud) return;
+  clearTimeout(pushTimer);
+  /* Notbremse: ein leerer Stand darf einen vollen niemals ersetzen.
+     Nur ein ausdrückliches "Alles löschen" darf das. */
+  if (liveCount(S.recs) === 0 && (bootCount > 0 || cloudFound) && !wipeAbsicht){
+    setSync('error', 'Sicherung angehalten');
+    return;
+  }
+  try{
+    setSync('saving', 'Sichert…');
+    await cloud.publish({
+      'data/state.json': { content: JSON.stringify(S), contentType: 'application/json' }
+    });
+    lastPush = clock(new Date());
+    setSync('ok', 'Gesichert ' + lastPush);
+  }catch(e){
+    const code = e && e.code;
+    if (code === 'conflict'){
+      const tries = +(sessionStorage.getItem('clarity.reloads') || 0);
+      setSync('saving', 'Gleicht ab…');
+      if (tries < 3){
+        sessionStorage.setItem('clarity.reloads', tries + 1);
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        setSync('error', 'Abgleich stockt');
+      }
+    } else if (code === 'not_writer' || code === 'not_granted' || code === 'not_declared'
+            || code === 'capability_disabled' || code === 'capability_removed'){
+      cloud = null;
+      setSync('local', 'Nur auf diesem Gerät');
+    } else if (code === 'rate_limited'){
+      setSync('saving', 'Sichert gleich…');
+      pushTimer = setTimeout(pushCloud, 20000);
+    } else {
+      setSync('error', 'Nicht gesichert');
+      pushTimer = setTimeout(pushCloud, 15000);
+    }
+  }
+}
+
+/* ========================================================
+   3. Sonnenstand — bestimmt Hintergrund und Tagesbogen
+   Naeherung nach dem ueblichen NOAA-Verfahren; Standort
+   Mitte Deutschlands.
+   ======================================================== */
+const LAT = 51.16, LON = 10.45;
+function sunTimes(date){
+  const rad = Math.PI/180, J1970 = 2440588, J2000 = 2451545, dayMs = 86400000;
+  const toJulian = d => d.valueOf()/dayMs - 0.5 + J1970;
+  const fromJulian = j => new Date((j + 0.5 - J1970) * dayMs);
+  const days = toJulian(date) - J2000;
+  const lw = rad * -LON, phi = rad * LAT, e = rad * 23.4397;
+  const cycle = Math.round(days - 0.0009 - lw/(2*Math.PI));
+  const approx = ht => 0.0009 + (ht + lw)/(2*Math.PI) + cycle;
+  const M = rad * (357.5291 + 0.98560028 * approx(0));
+  const C = rad * (1.9148*Math.sin(M) + 0.02*Math.sin(2*M) + 0.0003*Math.sin(3*M));
+  const L = M + C + rad*102.9372 + Math.PI;
+  const dec = Math.asin(Math.sin(e) * Math.sin(L));
+  const transit = ds => J2000 + ds + 0.0053*Math.sin(M) - 0.0069*Math.sin(2*L);
+  const noonJ = transit(approx(0));
+  const cosW = (Math.sin(rad*-0.833) - Math.sin(phi)*Math.sin(dec)) / (Math.cos(phi)*Math.cos(dec));
+  if (cosW > 1 || cosW < -1) return null;
+  const setJ = transit(approx(Math.acos(cosW)));
+  const noon = fromJulian(noonJ), set = fromJulian(setJ);
+  return { rise: new Date(2*noon - set), set: set, noon: noon };
+}
+function dayPart(now, sun){
+  if (!sun) return now.getHours() >= 8 && now.getHours() < 18 ? 'midday' : 'night';
+  const t = now.getTime(), r = sun.rise.getTime(), s = sun.set.getTime();
+  if (t < r - 45*60000 || t > s + 75*60000) return 'night';
+  if (t < r + 55*60000) return 'dawn';
+  if (t > s - 55*60000) return 'dusk';
+  const f = (t - r) / (s - r);
+  if (f < 0.36) return 'morning';
+  if (f < 0.68) return 'midday';
+  return 'afternoon';
+}
+const GREET = {
+  dawn: 'Der Tag fängt gerade an', morning: 'Guten Morgen', midday: 'Guten Tag',
+  afternoon: 'Guten Nachmittag', dusk: 'Guten Abend', night: 'Gute Nacht'
+};
+
+let arcLen = 0;
+let currentGreet = '';
+function paintSky(){
+  const now = new Date();
+  const sun = sunTimes(now);
+  const part = dayPart(now, sun);
+  document.documentElement.dataset.day = part;
+
+  const name = prefs().name ? (prefs().name + '').trim() : '';
+  currentGreet = GREET[part] + (name ? ', ' + name + '.' : '.');
+  if (dayCursor === todayIso()) $('#t-greet').textContent = currentGreet;
+
+  const path = $('#arc-done');
+  if (!arcLen && path.getTotalLength) arcLen = path.getTotalLength();
+
+  let f = 0, note = '', lRise = '–', lSet = '–';
+  if (sun){
+    const t = now.getTime(), r = sun.rise.getTime(), s = sun.set.getTime();
+    if (t >= r && t <= s){
+      f = (t - r) / (s - r);
+      note = 'noch ' + hm(s - t) + ' Tageslicht';
+      lRise = '↑ ' + clock(sun.rise); lSet = '↓ ' + clock(sun.set);
+    } else {
+      const nextRise = t > s ? sunTimes(new Date(t + 86400000)).rise : sun.rise;
+      const prevSet  = t > s ? sun.set : sunTimes(new Date(t - 86400000)).set;
+      f = (t - prevSet.getTime()) / (nextRise.getTime() - prevSet.getTime());
+      note = 'Sonnenaufgang in ' + hm(nextRise.getTime() - t);
+      lRise = '↓ ' + clock(prevSet); lSet = '↑ ' + clock(nextRise);
+    }
+  }
+  f = Math.min(1, Math.max(0, f));
+  if (arcLen){
+    path.setAttribute('stroke-dasharray', arcLen);
+    path.setAttribute('stroke-dashoffset', arcLen * (1 - f));
+    const p = path.getPointAtLength(arcLen * f);
+    $('#arc-dot').setAttribute('cx', p.x);
+    $('#arc-dot').setAttribute('cy', p.y);
+    document.documentElement.style.setProperty('--sun-x', (p.x/520*100).toFixed(1) + '%');
+    document.documentElement.style.setProperty('--sun-y', (28 + p.y/92*40).toFixed(1) + '%');
+  }
+  $('#arc-rise').textContent = lRise;
+  $('#arc-set').textContent = lSet;
+  $('#arc-note').textContent = note;
+  $('#b-time').textContent = 'Stand ' + clock(now);
+}
+
+/* ========================================================
+   4. Zeilen
+   ======================================================== */
+function startEdit(li, id, field){
+  const body = li.querySelector('.item-body');
+  const textEl = li.querySelector('.item-text');
+  if (!textEl || li.querySelector('.item-edit')) return;
+  const input = h('input', { class:'item-edit', type:'text', value: rec(id)[field] || '' });
+  body.replaceChild(input, textEl);
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+  let closed = false;
+  const finish = (keep) => {
+    if (closed) return; closed = true;
+    const val = input.value.trim();
+    if (keep && val) put(id, { [field]: val });
+    else render();
+  };
+  input.addEventListener('blur', () => finish(true));
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter'){ ev.preventDefault(); finish(true); }
+    if (ev.key === 'Escape'){ ev.preventDefault(); finish(false); }
+  });
+}
+
+function linkBits(r){
+  const u = safeUrl(r.url);
+  const bits = [];
+  if (u){
+    const host = u.hostname.replace(/^www\./,'');
+    /* Steht im Namen schon die Adresse, waere der Host daneben doppelt. */
+    const label = String(r.text || '').trim().toLowerCase() === host.toLowerCase() ? 'Öffnen' : host;
+    bits.push(h('a', { href: u.href, target:'_blank', rel:'noopener noreferrer' }, [icon('i-out'), label]));
+  }
+  if (r.price) bits.push(h('span', { class:'chip plain', text: r.price }));
+  if (r.note) bits.push(h('span', { text: r.note }));
+  return bits;
+}
+
+function taskRow(id, r, opts){
+  opts = opts || {};
+  const li = h('li', { class:'item' + (r.done ? ' done' : '') + (r.star ? ' star' : '') });
+  li.appendChild(h('button', {
+    class:'check', type:'button',
+    'aria-label': r.done ? 'Als offen markieren' : 'Als erledigt markieren',
+    onclick: () => put(id, { done: r.done ? 0 : 1, doneAt: Date.now() })
+  }, [icon('i-check')]));
+
+  const meta = [];
+  if (opts.showDate) meta.push(h('span', { text: relDay(r.date) }));
+  const body = h('div', { class:'item-body' }, [
+    h('span', { class:'item-text', text: r.text, tabindex:'0',
+      onclick: ev => startEdit(ev.currentTarget.closest('.item'), id, 'text'),
+      onkeydown: ev => { if (ev.key === 'Enter') startEdit(ev.currentTarget.closest('.item'), id, 'text'); } }),
+    meta.length ? h('div', { class:'item-meta' }, meta) : null
+  ]);
+  li.appendChild(body);
+
+  const acts = h('div', { class:'item-acts' });
+  if (opts.carry){
+    acts.appendChild(h('button', { class:'btn quiet', type:'button', title:'Auf heute holen',
+      onclick: () => { put(id, { date: todayIso() }); toast('Auf heute geholt'); } }, ['Heute']));
+  } else if (!r.done){
+    acts.appendChild(h('button', {
+      class:'iconbtn' + (r.star ? ' on' : ''), type:'button',
+      'aria-label': r.star ? 'Hervorhebung aufheben' : 'Hervorheben',
+      onclick: () => put(id, { star: r.star ? 0 : 1 })
+    }, [icon('i-star')]));
+  }
+  acts.appendChild(h('button', { class:'iconbtn', type:'button', 'aria-label':'Aufgabe löschen',
+    onclick: () => { drop(id); toast('Gelöscht'); } }, [icon('i-trash')]));
+  li.appendChild(acts);
+  return li;
+}
+
+function listRow(id, r){
+  const li = h('li', { class:'item' + (r.done ? ' done' : '') });
+  li.appendChild(h('button', {
+    class:'check', type:'button',
+    'aria-label': r.done ? 'Zurücklegen' : 'Abhaken',
+    onclick: () => put(id, { done: r.done ? 0 : 1 })
+  }, [icon('i-check')]));
+  const bits = linkBits(r);
+  li.appendChild(h('div', { class:'item-body' }, [
+    h('span', { class:'item-text', text: r.text, tabindex:'0',
+      onclick: ev => startEdit(ev.currentTarget.closest('.item'), id, 'text'),
+      onkeydown: ev => { if (ev.key === 'Enter') startEdit(ev.currentTarget.closest('.item'), id, 'text'); } }),
+    bits.length ? h('div', { class:'item-meta' }, bits) : null
+  ]));
+  li.appendChild(h('div', { class:'item-acts' }, [
+    h('button', { class:'iconbtn', type:'button', 'aria-label':'Eintrag löschen',
+      onclick: () => { drop(id); toast('Gelöscht'); } }, [icon('i-trash')])
+  ]));
+  return li;
+}
+
+function eventRow(id, r){
+  return h('div', { class:'ev' }, [
+    h('div', { class:'ev-mark' }),
+    h('div', { class:'ev-time num', text: r.time || 'ganztags' }),
+    h('div', { class:'grow' }, [
+      h('div', { class:'ev-title', text: r.title }),
+      r.note ? h('div', { class:'ev-note', text: r.note }) : null
+    ]),
+    h('button', { class:'iconbtn', type:'button', 'aria-label':'Termin löschen',
+      onclick: () => { drop(id); toast('Termin gelöscht'); } }, [icon('i-trash')])
+  ]);
+}
+
+/* ========================================================
+   5. Ansichten
+   ======================================================== */
+let view = 'today';
+let calMonth = new Date();
+let calSel = todayIso();
+let listKind = 'shop';
+let showDone = false;
+let dayCursor = todayIso();   /* welcher Tag in der Tagesansicht steht */
+let paneKind = 'tasks';       /* Aufgaben oder Routine — bleibt pro Geraet */
+try{ paneKind = localStorage.getItem('clarity.pane') === 'routine' ? 'routine' : 'tasks'; }catch(e){}
+
+function photosOn(date){
+  return ofType('photo').filter(x => x[1].date === date).sort((a,b) => a[0] < b[0] ? 1 : -1);
+}
+function routines(){
+  return ofType('routine').sort((a,b) => a[0] < b[0] ? -1 : 1);
+}
+
+function tasksOn(date){
+  return ofType('task').filter(x => x[1].date === date)
+    .sort((a,b) => (b[1].star?1:0) - (a[1].star?1:0) || (a[0] < b[0] ? -1 : 1));
+}
+function eventsOn(date){
+  return ofType('event').filter(x => x[1].date === date)
+    .sort((a,b) => (a[1].time || '99:99').localeCompare(b[1].time || '99:99'));
+}
+function carryTasks(){
+  const t = todayIso();
+  return ofType('task').filter(x => !x[1].done && x[1].date < t)
+    .sort((a,b) => a[1].date.localeCompare(b[1].date));
+}
+
+function renderToday(){
+  const t = dayCursor, today = todayIso(), d = fromIso(t);
+  const isToday = t === today;
+  $('#t-weekday').textContent = DE_DAY[d.getDay()];
+  $('#t-date').textContent = longDate(t);
+  $('#t-back-today').hidden = isToday;
+  $('#t-arc').hidden = !isToday;
+  $('#t-quote-card').hidden = !isToday;
+
+  /* Aufgaben und Routine teilen sich den Platz — es steht immer nur eins da.
+     An anderen Tagen als heute gibt es keine Routine, dann faellt der Umschalter weg. */
+  const pane = isToday ? paneKind : 'tasks';
+  $('#t-pane-seg').hidden = !isToday;
+  $('#t-tasks-card').hidden = pane !== 'tasks';
+  $('#t-routine').hidden = pane !== 'routine';
+  $('#pane-tasks').setAttribute('aria-selected', pane === 'tasks');
+  $('#pane-routine').setAttribute('aria-selected', pane === 'routine');
+  $('#t-input').placeholder = isToday ? 'Was steht heute an?' : 'Was steht an diesem Tag an?';
+  if (isToday){
+    $('#t-greet').textContent = currentGreet;
+  } else {
+    const diff = Math.round((fromIso(t) - fromIso(today)) / 86400000);
+    $('#t-greet').textContent = diff === 1 ? 'Morgen'
+      : diff === -1 ? 'Gestern'
+      : diff > 0 ? 'In ' + diff + ' Tagen'
+      : 'Vor ' + Math.abs(diff) + ' Tagen';
+  }
+
+  const all = tasksOn(t);
+  const open = all.filter(x => !x[1].done);
+  const done = all.filter(x => x[1].done);
+
+  const list = $('#t-list'); clear(list);
+  open.forEach(x => list.appendChild(taskRow(x[0], x[1])));
+  $('#t-empty').hidden = all.length > 0;
+  $('#t-count').textContent = open.length ? open.length + ' offen' : (all.length ? 'alles erledigt' : '');
+
+  const ring = $('#t-ring');
+  ring.hidden = all.length === 0;
+  if (all.length){
+    const f = done.length / all.length;
+    $('#t-ring-fg').setAttribute('stroke-dashoffset', (113.1 * (1 - f)).toFixed(1));
+    $('#t-ring-num').textContent = done.length + '/' + all.length;
+  }
+
+  $('#t-donewrap').hidden = done.length === 0;
+  $('#t-toggle-done').textContent = (showDone ? 'Erledigte ausblenden' : 'Erledigte zeigen') + ' (' + done.length + ')';
+  const dl = $('#t-donelist'); clear(dl); dl.hidden = !showDone;
+  if (showDone) done.forEach(x => dl.appendChild(taskRow(x[0], x[1])));
+
+  const carry = carryTasks();
+  $('#t-carry').hidden = !isToday || carry.length === 0;
+  const cl = $('#t-carrylist'); clear(cl);
+  carry.slice(0, 12).forEach(x => cl.appendChild(taskRow(x[0], x[1], { carry:true, showDate:true })));
+
+  const evs = eventsOn(t);
+  const ev = $('#t-events'); clear(ev);
+  evs.forEach(x => ev.appendChild(eventRow(x[0], x[1])));
+  $('#t-events-empty').hidden = evs.length > 0;
+
+  renderRoutine();
+  renderPhotos(t, $('#t-photos'), $('#t-photo-count'));
+  if (isToday){
+    const q = quoteOf(t);
+    $('#t-quote').textContent = '„' + q.t + '“';
+    $('#t-quote-src').textContent = q.a;
+  }
+
+  const now = new Date();
+  const upcoming = ofType('event')
+    .filter(x => x[1].date > t || (x[1].date === t && (x[1].time || '23:59') >= clock(now)))
+    .sort((a,b) => (a[1].date + (a[1].time||'99:99')).localeCompare(b[1].date + (b[1].time||'99:99')))[0];
+  const nx = $('#t-next'); clear(nx);
+  if (upcoming){
+    nx.appendChild(h('div', { class:'row', style:'gap:.5rem; align-items:baseline' }, [
+      h('span', { class:'chip', text: relDay(upcoming[1].date) + (upcoming[1].time ? ' · ' + upcoming[1].time : '') }),
+      h('span', { class:'grow', style:'color:var(--ink); font-weight:600', text: upcoming[1].title })
+    ]));
+  } else {
+    nx.textContent = 'Kein Termin in Sicht.';
+  }
+}
+
+/* ---------- Routine: gilt jeden Tag, haengt am Datum des Abhakens ---------- */
+function routineRow(id, r){
+  const t = todayIso();
+  const done = r.doneOn === t;
+  const li = h('li', { class:'item' + (done ? ' done' : '') });
+  li.appendChild(h('button', {
+    class:'check', type:'button',
+    'aria-label': done ? 'Wieder offen' : 'Für heute abhaken',
+    onclick: () => put(id, { doneOn: done ? '' : t })
+  }, [icon('i-check')]));
+  li.appendChild(h('div', { class:'item-body' }, [
+    h('span', { class:'item-text', text: r.text, tabindex:'0',
+      onclick: ev => startEdit(ev.currentTarget.closest('.item'), id, 'text'),
+      onkeydown: ev => { if (ev.key === 'Enter') startEdit(ev.currentTarget.closest('.item'), id, 'text'); } })
+  ]));
+  li.appendChild(h('div', { class:'item-acts' }, [
+    h('button', { class:'iconbtn', type:'button', 'aria-label':'Aus der Routine nehmen',
+      onclick: () => { drop(id); toast('Aus der Routine genommen'); } }, [icon('i-trash')])
+  ]));
+  return li;
+}
+function renderRoutine(){
+  const rows = routines(), t = todayIso();
+  const list = $('#t-routine-list'); clear(list);
+  rows.forEach(x => list.appendChild(routineRow(x[0], x[1])));
+  $('#t-routine-empty').hidden = rows.length > 0;
+  const done = rows.filter(x => x[1].doneOn === t).length;
+  $('#t-routine-num').textContent = done + '/' + rows.length;
+  $('#t-routine-bar').style.width = rows.length ? Math.round(done / rows.length * 100) + '%' : '0%';
+}
+
+/* ---------- Zettel: Foto verkleinern und am Tag ablegen ---------- */
+const PHOTO_BUDGET = 2400000;   /* Rohlaenge aller Bilddaten zusammen */
+function photoBytes(){
+  return ofType('photo').reduce((n, x) => n + (x[1].data ? x[1].data.length : 0), 0);
+}
+function downscale(file, maxPx, quality){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const f = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * f));
+      const hh = Math.max(1, Math.round(img.height * f));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = hh;
+      c.getContext('2d').drawImage(img, 0, 0, w, hh);
+      URL.revokeObjectURL(url);
+      try{ res(c.toDataURL('image/jpeg', quality)); }catch(e){ rej(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Bild')); };
+    img.src = url;
+  });
+}
+async function addPhoto(file, date){
+  try{
+    const data = await downscale(file, 1280, 0.62);
+    if (photoBytes() + data.length > PHOTO_BUDGET){
+      toast('Kein Platz mehr für Zettel — bitte alte löschen');
+      return;
+    }
+    add({ t:'photo', date, data, time: clock(new Date()) });
+    toast('Zettel gespeichert');
+  }catch(e){
+    toast('Das Bild ließ sich nicht lesen');
+  }
+}
+function renderPhotos(date, box, counter){
+  const rows = photosOn(date);
+  clear(box);
+  rows.forEach(x => box.appendChild(h('button', {
+    class:'photo', type:'button', 'aria-label':'Zettel von ' + (x[1].time || longDate(x[1].date)) + ' ansehen',
+    onclick: () => openPhoto(x[0])
+  }, [
+    h('img', { src: x[1].data, alt:'Abfotografierter Zettel', loading:'lazy' }),
+    h('span', { text: x[1].time || '' })
+  ])));
+  if (counter) counter.textContent = rows.length ? rows.length + (rows.length === 1 ? ' Bild' : ' Bilder') : '';
+}
+
+/* ---------- Zitat des Tages: fester Vorrat, nach Datum durchgezaehlt ---------- */
+const QUOTES = [
+  { t:'Es ist nicht wenig Zeit, die wir haben, sondern es ist viel Zeit, die wir nicht nutzen.', a:'Seneca' },
+  { t:'Nicht weil es schwer ist, wagen wir es nicht, sondern weil wir es nicht wagen, ist es schwer.', a:'Seneca' },
+  { t:'Es ist nicht genug zu wissen, man muss auch anwenden.', a:'Johann Wolfgang von Goethe' },
+  { t:'Wer nicht vorwärts geht, der kommt zurücke.', a:'Johann Wolfgang von Goethe' },
+  { t:'Erfolg hat drei Buchstaben: TUN.', a:'Johann Wolfgang von Goethe' },
+  { t:'Habe Mut, dich deines eigenen Verstandes zu bedienen.', a:'Immanuel Kant' },
+  { t:'Wer ein Warum zu leben hat, erträgt fast jedes Wie.', a:'Friedrich Nietzsche' },
+  { t:'Wer nichts weiß, muss alles glauben.', a:'Marie von Ebner-Eschenbach' },
+  { t:'Ein kluger Kopf ist noch kein guter Kopf.', a:'Marie von Ebner-Eschenbach' },
+  { t:'Es muss anders werden, wenn es gut werden soll.', a:'Georg Christoph Lichtenberg' },
+  { t:'Ich kann nicht sagen, ob es besser wird, wenn es anders wird. Aber anders muss es werden.', a:'Georg Christoph Lichtenberg' },
+  { t:'Es wächst der Mensch mit seinen größeren Zwecken.', a:'Friedrich Schiller' },
+  { t:'Erstens kommt es anders, und zweitens als man denkt.', a:'Wilhelm Busch' },
+  { t:'Auch der längste Weg beginnt mit dem ersten Schritt.', a:'Laotse' },
+  { t:'Der Anfang ist die Hälfte des Ganzen.', a:'Aristoteles' },
+  { t:'Sage mir, was du für unmöglich hältst, und ich sage dir, wie weit du kommst.', a:'Sprichwort' },
+  { t:'Erfahrung heißt gar nichts. Man kann seine Sache auch fünfunddreißig Jahre schlecht machen.', a:'Kurt Tucholsky' },
+  { t:'Man reist nicht, um anzukommen, sondern um zu reisen.', a:'Johann Wolfgang von Goethe' },
+  { t:'Die Zukunft hat viele Namen: Für Schwache ist sie das Unerreichbare, für Furchtsame das Unbekannte, für Mutige die Chance.', a:'Victor Hugo' },
+  { t:'Ordnung ist die Lust der Vernunft, Unordnung die Wonne der Fantasie.', a:'Paul Claudel' },
+  { t:'Es ist nicht deine Schuld, dass die Welt ist, wie sie ist. Es wäre nur deine Schuld, wenn sie so bleibt.', a:'Sprichwort' },
+  { t:'Wer immer tut, was er schon kann, bleibt immer das, was er schon ist.', a:'Henry Ford' },
+  { t:'Ob du denkst, du kannst es, oder du kannst es nicht: Du hast recht.', a:'Henry Ford' },
+  { t:'Der beste Weg, es zu tun, ist, es zu tun.', a:'Amelia Earhart' },
+  { t:'Was du heute kannst besorgen, das verschiebe nicht auf morgen.', a:'Sprichwort' },
+  { t:'Der Mensch ist nirgends mehr zu Hause als bei seiner Arbeit.', a:'Theodor Fontane' },
+  { t:'Das Gute – dieser Satz steht fest – ist stets das Böse, was man lässt.', a:'Wilhelm Busch' },
+  { t:'Wer kämpft, kann verlieren. Wer nicht kämpft, hat schon verloren.', a:'Sprichwort' },
+  { t:'Man sieht nur mit dem Herzen gut.', a:'Antoine de Saint-Exupéry' },
+  { t:'Alles, was du dir vorstellen kannst, ist wirklich.', a:'Pablo Picasso' },
+  { t:'Die Grenzen meiner Sprache bedeuten die Grenzen meiner Welt.', a:'Ludwig Wittgenstein' },
+  { t:'Zeit ist das, woran es uns am meisten mangelt und was wir am schlechtesten nutzen.', a:'William Penn' }
+];
+/* ---------- Vorlesen: die Stimmen des Geraets, kein fremder Dienst ---------- */
+const VOICE_KEY = 'clarity.voice';
+const RATE_KEY = 'clarity.rate';
+/* Namen, die auf iOS, Android und Windows als angenehme deutsche Stimmen gelten. */
+const NICE_VOICES = ['petra','katja','anna','helena','markus','martin','hedda','google deutsch','deutsch'];
+let speakTimer = 0;
+
+function germanVoices(){
+  if (!('speechSynthesis' in window)) return [];
+  let all = [];
+  try{ all = speechSynthesis.getVoices() || []; }catch(e){ return []; }
+  return all.filter(v => /^de/i.test(v.lang || ''));
+}
+/* Die hochwertigen Fassungen einer Stimme tragen es im Namen; die
+   "kompakten" sind die blechernen. Danach wird sortiert. */
+function voiceScore(v){
+  const n = (v.name || '').toLowerCase();
+  let s = 0;
+  if (/premium|enhanced|erweitert|neural|natural|siri/.test(n)) s += 60;
+  if (/compact|kompakt|espeak|pico/.test(n)) s -= 40;
+  if (v.localService) s += 8;
+  for (let i = 0; i < NICE_VOICES.length; i++){
+    if (n.indexOf(NICE_VOICES[i]) >= 0){ s += (NICE_VOICES.length - i) * 2; break; }
+  }
+  return s;
+}
+function sortedVoices(){
+  return germanVoices().slice().sort((a, b) => voiceScore(b) - voiceScore(a));
+}
+function pickVoice(){
+  const list = sortedVoices();
+  if (!list.length) return null;
+  let saved = null;
+  try{ saved = localStorage.getItem(VOICE_KEY); }catch(e){}
+  if (saved){
+    const hit = list.find(v => v.name === saved);
+    if (hit) return hit;
+  }
+  return list[0];
+}
+function speakRate(){
+  let r = parseFloat(localStorage.getItem(RATE_KEY));
+  if (!(r >= 0.7 && r <= 1.2)) r = 0.94;
+  return r;
+}
+
+/* Aussprache glaetten: Abkuerzungen und Uhrzeiten ausschreiben,
+   Anfuehrungszeichen entfernen — die erzeugen sonst harte Absaetze. */
+function sayable(text){
+  return String(text)
+    .replace(/[„“”"»«]/g, '')
+    .replace(/(\d{1,2}):(\d{2})/g, '$1 Uhr $2')
+    .replace(/\bz\.\s?B\./gi, 'zum Beispiel')
+    .replace(/\bu\.\s?a\./gi, 'unter anderem')
+    .replace(/\bca\./gi, 'circa')
+    .replace(/\bbzw\./gi, 'beziehungsweise')
+    .replace(/\busw\./gi, 'und so weiter')
+    .replace(/\bMio\./gi, 'Millionen')
+    .replace(/\bMrd\./gi, 'Milliarden')
+    .replace(/\bNr\./gi, 'Nummer')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+/* In Haeppchen von rund 240 Zeichen an Satzgrenzen teilen: zu kurze
+   Stuecke klingen abgehackt, zu lange brechen manche Browser ab.
+   Bewusst ohne Lookbehind — aeltere Safari-Fassungen brechen daran. */
+function chunks(text){
+  const out = [];
+  let buf = '';
+  for (let i = 0; i < text.length; i++){
+    const ch = text[i];
+    buf += ch;
+    const ende = (ch === '.' || ch === '!' || ch === '?' || ch === ':') && text[i+1] === ' ';
+    if (ende && buf.length > 240){ out.push(buf.trim()); buf = ''; }
+  }
+  if (buf.trim()) out.push(buf.trim());
+  return out;
+}
+function setSpeakState(on){
+  $('#b-speak-txt').textContent = on ? 'Stopp' : 'Vorlesen';
+  const use = $('#b-speak').querySelector('use');
+  if (use) use.setAttribute('href', on ? '#i-stop' : '#i-speak');
+  clearInterval(speakTimer);
+  if (on){
+    /* Manche Browser brechen lange Vorlesungen ab; ein Anstupsen haelt sie am Laufen. */
+    speakTimer = setInterval(() => {
+      try{ if (speechSynthesis.speaking) speechSynthesis.resume(); }catch(e){}
+    }, 8000);
+  }
+}
+function stopSpeaking(){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  setSpeakState(false);
+}
+function speakText(text){
+  if (!('speechSynthesis' in window)){ toast('Dieser Browser kann nicht vorlesen'); return; }
+  stopSpeaking();
+  const voice = pickVoice();
+  const parts = chunks(sayable(text));
+  if (!parts.length) return;
+  const rate = speakRate();
+  parts.forEach((part, i) => {
+    const u = new SpeechSynthesisUtterance(part);
+    if (voice) u.voice = voice;
+    u.lang = (voice && voice.lang) || 'de-DE';
+    u.rate = rate;
+    u.pitch = 1;
+    if (i === parts.length - 1) u.onend = () => setSpeakState(false);
+    u.onerror = () => setSpeakState(false);
+    try{ speechSynthesis.speak(u); }catch(e){}
+  });
+  setSpeakState(true);
+}
+function joinDe(arr){
+  if (arr.length === 1) return arr[0];
+  return arr.slice(0, -1).join(', ') + ' und ' + arr[arr.length - 1];
+}
+/* Zusammenhaengende Saetze statt einzelner Zeilen — Aufzaehlungen und
+   Uebergaenge sind es, die eine Vorlesestimme menschlich wirken lassen. */
+function briefingText(){
+  const t = todayIso(), d = fromIso(t);
+  const s = [];
+  s.push((currentGreet || 'Hallo.').replace(/\.$/, '') + '.');
+  s.push('Heute ist ' + DE_DAY[d.getDay()] + ', der ' + d.getDate() + '. ' + DE_MON[d.getMonth()] + '.');
+
+  const open = tasksOn(t).filter(x => !x[1].done).map(x => x[1].text);
+  if (!open.length) s.push('Offene Aufgaben hast du keine.');
+  else if (open.length === 1) s.push('Auf deiner Liste steht eine Aufgabe: ' + open[0] + '.');
+  else s.push('Auf deiner Liste stehen ' + open.length + ' Aufgaben: ' + joinDe(open.slice(0, 6)) + '.');
+
+  const evs = eventsOn(t);
+  if (!evs.length) s.push('Termine hast du heute keine.');
+  else {
+    const said = evs.map(x => (x[1].time ? 'um ' + x[1].time + ' ' : '') + x[1].title);
+    s.push(evs.length === 1
+      ? 'Ein Termin steht an, ' + said[0] + '.'
+      : 'Es stehen ' + evs.length + ' Termine an: ' + joinDe(said) + '.');
+  }
+
+  const carry = carryTasks().length;
+  if (carry) s.push('Außerdem ' + (carry === 1 ? 'ist eine Aufgabe' : 'sind ' + carry + ' Aufgaben') + ' von früher offen geblieben.');
+
+  const rout = routines();
+  if (rout.length){
+    const done = rout.filter(x => x[1].doneOn === t).length;
+    s.push(done === rout.length
+      ? 'Deine Routine hast du heute schon komplett geschafft.'
+      : 'Von deiner Routine hast du ' + done + ' von ' + rout.length + ' erledigt.');
+  }
+
+  /* Vorgelesen wird nur der jüngste Stand, nicht das ganze Archiv. */
+  const alleN = newsSortiert();
+  const frisch = alleN.filter(n => n.date === (alleN[0] && alleN[0].date));
+  const meine = frisch.filter(n => newsThema === 'Alle' || n.kind === newsThema);
+  const vorlesen = meine.length ? meine : frisch;
+  if (vorlesen.length){
+    s.push('Nun zu den Nachrichten.');
+    const ord = ['Erstens', 'Zweitens', 'Drittens', 'Viertens', 'Fünftens', 'Sechstens', 'Siebtens', 'Achtens'];
+    vorlesen.forEach((n, i) => {
+      s.push((ord[i] || 'Und weiter') + ': ' + n.title.replace(/\.$/, '') + '. ' + n.text);
+    });
+  }
+
+  const q = quoteOf(t);
+  s.push('Und zum Schluss das Zitat des Tages: ' + q.t.replace(/\.$/, '') + '. Von ' + q.a + '.');
+  return s.join(' ');
+}
+function fillVoiceList(){
+  const sel = $('#set-voice');
+  if (!sel) return;
+  const list = sortedVoices();
+  const current = pickVoice();
+  const rate = $('#set-rate');
+  if (rate){ rate.value = speakRate(); showRate(); }
+  clear(sel);
+  if (!list.length){
+    sel.appendChild(h('option', { value:'', text:'Keine deutsche Stimme gefunden' }));
+    sel.disabled = true;
+    $('#set-voice-hint').textContent = 'Dein Gerät bietet keine deutsche Stimme an.';
+    return;
+  }
+  sel.disabled = false;
+  list.forEach(v => {
+    const o = h('option', { value: v.name, text: v.name + (v.localService ? '' : ' (online)') });
+    if (current && v.name === current.name) o.selected = true;
+    sel.appendChild(o);
+  });
+  const best = list[0] && voiceScore(list[0]) >= 60;
+  $('#set-voice-hint').textContent = list.length + ' Stimmen, die beste zuerst.'
+    + (best ? '' : ' Hochwertige Stimmen lädst du in den Geräte-Einstellungen nach.');
+}
+function showRate(){
+  const r = parseFloat($('#set-rate').value);
+  $('#set-rate-val').textContent = r < 0.85 ? 'ruhig' : r > 1.05 ? 'zügig' : 'normal';
+}
+
+function quoteOf(dateIso){
+  const days = Math.floor(fromIso(dateIso).getTime() / 86400000);
+  return QUOTES[((days % QUOTES.length) + QUOTES.length) % QUOTES.length];
+}
+
+function renderCal(){
+  const dow = $('#cal-dow');
+  if (!dow.childElementCount){
+    ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(x => dow.appendChild(h('div', { class:'cal-dow', text:x })));
+  }
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  $('#cal-title').textContent = DE_MON[m] + ' ' + y;
+
+  const first = new Date(y, m, 1);
+  const lead = (first.getDay() + 6) % 7;
+  const start = new Date(y, m, 1 - lead);
+  const t = todayIso();
+
+  const grid = $('#cal-grid'); clear(grid);
+  for (let i = 0; i < 42; i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const key = iso(d);
+    const hasEv = eventsOn(key).length > 0;
+    const hasTask = tasksOn(key).some(x => !x[1].done);
+    const cls = 'cal-day' + (d.getMonth() !== m ? ' out' : '') + (key === t ? ' today' : '') + (key === calSel ? ' sel' : '');
+    const dots = h('div', { class:'dots' });
+    if (hasEv) dots.appendChild(h('span', { class:'dot' }));
+    if (hasTask) dots.appendChild(h('span', { class:'dot task' }));
+    if (photosOn(key).length) dots.appendChild(h('span', { class:'dot photo' }));
+    grid.appendChild(h('button', {
+      class: cls, type:'button', 'aria-label': d.getDate() + '. ' + DE_MON[d.getMonth()],
+      onclick: () => { calSel = key; render(); }
+    }, [ h('span', { text: String(d.getDate()) }), dots ]));
+  }
+
+  const selD = fromIso(calSel);
+  $('#cal-day-title').textContent = DE_DAY[selD.getDay()] + ', ' + longDate(calSel);
+
+  const evs = eventsOn(calSel);
+  const box = $('#cal-events'); clear(box);
+  evs.forEach(x => box.appendChild(eventRow(x[0], x[1])));
+  $('#cal-events-empty').hidden = evs.length > 0;
+
+  $('#cal-photo-wrap').hidden = photosOn(calSel).length === 0;
+  renderPhotos(calSel, $('#cal-photos'), null);
+
+  const tl = $('#cal-tasks'); clear(tl);
+  tasksOn(calSel).forEach(x => tl.appendChild(taskRow(x[0], x[1])));
+}
+
+function renderLists(){
+  const rows = ofType(listKind).sort((a,b) => (a[1].done?1:0) - (b[1].done?1:0) || (a[0] < b[0] ? -1 : 1));
+  const open = rows.filter(x => !x[1].done).length;
+  $('#l-title').textContent = listKind === 'shop' ? 'Einkaufsliste' : 'Wunschliste';
+  $('#l-count').textContent = rows.length ? open + ' offen · ' + rows.length + ' gesamt' : '';
+  $('#l-price-field').hidden = listKind !== 'wish';
+  $('#l-text').placeholder = listKind === 'shop' ? 'Was brauchst du?' : 'Was wünschst du dir?';
+  $('#seg-shop').setAttribute('aria-selected', listKind === 'shop');
+  $('#seg-wish').setAttribute('aria-selected', listKind === 'wish');
+
+  const list = $('#l-list'); clear(list);
+  rows.forEach(x => list.appendChild(listRow(x[0], x[1])));
+  const empty = $('#l-empty');
+  empty.hidden = rows.length > 0;
+  empty.textContent = listKind === 'shop'
+    ? 'Leer. Trag ein, was beim nächsten Einkauf mit soll — Link geht auch.'
+    : 'Leer. Sammle hier, was du dir merken willst, mit Link und Preis.';
+}
+
+function renderBrief(){
+  const t = todayIso();
+  $('#g-tasks').textContent = tasksOn(t).filter(x => !x[1].done).length;
+  $('#g-events').textContent = eventsOn(t).length;
+  $('#g-carry').textContent = carryTasks().length;
+  $('#g-shop').textContent = ofType('shop').filter(x => !x[1].done).length;
+}
+
+function renderBadges(){
+  const t = todayIso();
+  const open = tasksOn(t).filter(x => !x[1].done).length;
+  const ev = eventsOn(t).length;
+  const shop = ofType('shop').filter(x => !x[1].done).length;
+  $('#badge-today').textContent = open || '';
+  $('#badge-cal').textContent = ev || '';
+  $('#badge-lists').textContent = shop || '';
+}
+
+let renderPending = 0;
+function render(){
+  if (renderPending) return;
+  /* setTimeout statt requestAnimationFrame: rAF ruht in Hintergrund-Tabs,
+     dort wuerde die erste Zeichnung sonst ausbleiben. */
+  renderPending = setTimeout(() => {
+    renderPending = 0;
+    renderToday();
+    renderCal();
+    renderLists();
+    renderBrief();
+    renderBadges();
+  }, 0);
+}
+
+function go(name){
+  /* Beim Verlassen des Briefings hoert das Vorlesen auf. */
+  if (view === 'brief' && name !== 'brief') stopSpeaking();
+  view = name;
+  for (const v of ['today','cal','lists','brief']){
+    $('#v-' + v).hidden = v !== name;
+  }
+  /* Die Pfeile gehoeren zur Tagesansicht und verschwinden mit ihr. */
+  const arrows = document.querySelectorAll('.dayarrow');
+  arrows.forEach(a => { a.hidden = name !== 'today'; });
+  if (name === 'today'){ render(); flashArrows(); }
+  if (name === 'brief') opInit();
+  zeigeLeiste();
+  letzteY = 0;
+  document.querySelectorAll('[data-view]').forEach(b => {
+    if (b.dataset.view === name) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* ========================================================
+   6. Bedienung
+   ======================================================== */
+document.querySelectorAll('[data-view]').forEach(b => {
+  b.addEventListener('click', () => {
+    /* "Heute" holt immer den heutigen Tag zurueck, auch wenn man gerade blaettert. */
+    if (b.dataset.view === 'today') dayCursor = todayIso();
+    go(b.dataset.view);
+  });
+});
+
+$('#t-input').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const val = ev.currentTarget.value.trim();
+  if (!val) return;
+  add({ t:'task', text: val, date: dayCursor, done:0, star:0 });
+  ev.currentTarget.value = '';
+});
+
+/* ---- Tageswechsel: Pfeile, Wischen, Pfeiltasten ---- */
+const arrowL = $('#day-prev'), arrowR = $('#day-next');
+let arrowTimer = 0;
+function flashArrows(){
+  if (view !== 'today') return;
+  arrowL.classList.add('show'); arrowR.classList.add('show');
+  clearTimeout(arrowTimer);
+  arrowTimer = setTimeout(() => {
+    if (!matchMedia('(hover:none)').matches){
+      arrowL.classList.remove('show'); arrowR.classList.remove('show');
+    }
+  }, 1800);
+}
+function shiftDay(n){
+  dayCursor = addDays(dayCursor, n);
+  render();
+  flashArrows();
+}
+arrowL.addEventListener('click', () => shiftDay(-1));
+arrowR.addEventListener('click', () => shiftDay(1));
+$('#t-back-today').addEventListener('click', () => { dayCursor = todayIso(); render(); });
+
+window.addEventListener('mousemove', ev => {
+  if (view !== 'today') return;
+  const near = 130;
+  arrowR.classList.toggle('show', innerWidth - ev.clientX < near);
+  arrowL.classList.toggle('show', ev.clientX < near);
+});
+document.addEventListener('keydown', ev => {
+  if (view !== 'today') return;
+  const tag = (ev.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || ev.target.isContentEditable) return;
+  if (ev.key === 'ArrowRight') shiftDay(1);
+  if (ev.key === 'ArrowLeft') shiftDay(-1);
+});
+let touchX = 0, touchY = 0;
+const dayView = $('#v-today');
+dayView.addEventListener('touchstart', ev => {
+  touchX = ev.changedTouches[0].clientX; touchY = ev.changedTouches[0].clientY;
+}, { passive:true });
+dayView.addEventListener('touchend', ev => {
+  const dx = ev.changedTouches[0].clientX - touchX;
+  const dy = ev.changedTouches[0].clientY - touchY;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.7) shiftDay(dx < 0 ? 1 : -1);
+}, { passive:true });
+
+/* ---- Umschalter Aufgaben / Routine ---- */
+document.querySelectorAll('[data-pane]').forEach(b => {
+  b.addEventListener('click', () => {
+    paneKind = b.dataset.pane;
+    try{ localStorage.setItem('clarity.pane', paneKind); }catch(e){}
+    render();
+  });
+});
+
+/* ---- Routine ---- */
+$('#t-routine-input').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const val = ev.currentTarget.value.trim();
+  if (!val) return;
+  add({ t:'routine', text: val, doneOn:'' });
+  ev.currentTarget.value = '';
+});
+
+/* ---- Zettel fotografieren ---- */
+let photoOpen = null;
+const dlgPhoto = $('#dlg-photo');
+$('#t-shoot').addEventListener('click', () => $('#t-photo-file').click());
+$('#t-photo-file').addEventListener('change', async ev => {
+  const file = ev.currentTarget.files && ev.currentTarget.files[0];
+  ev.currentTarget.value = '';
+  if (file) await addPhoto(file, dayCursor);
+});
+function openPhoto(id){
+  const r = rec(id);
+  if (!r) return;
+  photoOpen = id;
+  $('#photo-img').src = r.data;
+  $('#dlg-photo-title').textContent = 'Zettel vom ' + longDate(r.date) + (r.time ? ', ' + r.time : '');
+  dlgPhoto.showModal();
+}
+$('#photo-close').addEventListener('click', () => dlgPhoto.close());
+$('#photo-del').addEventListener('click', () => {
+  if (photoOpen){ drop(photoOpen); photoOpen = null; toast('Zettel gelöscht'); }
+  dlgPhoto.close();
+});
+$('#photo-toev').addEventListener('click', () => {
+  const id = photoOpen;
+  const r = id ? rec(id) : null;
+  dlgPhoto.close();
+  openEventDialog(r ? r.date : dayCursor, id);
+});
+$('#t-toggle-done').addEventListener('click', () => { showDone = !showDone; render(); });
+$('#t-carry-all').addEventListener('click', () => {
+  const c = carryTasks();
+  c.forEach(x => put(x[0], { date: todayIso() }));
+  toast(c.length + ' Aufgaben auf heute geholt');
+});
+
+$('#cal-prev').addEventListener('click', () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()-1, 1); render(); });
+$('#cal-next').addEventListener('click', () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1); render(); });
+$('#cal-today').addEventListener('click', () => { calMonth = new Date(); calSel = todayIso(); render(); });
+$('#cal-ev-add').addEventListener('click', () => {
+  const title = $('#cal-ev-title').value.trim();
+  if (!title){ $('#cal-ev-title').focus(); return; }
+  add({ t:'event', title, date: calSel, time: $('#cal-ev-time').value || '', note: $('#cal-ev-note').value.trim() });
+  $('#cal-ev-title').value = ''; $('#cal-ev-time').value = ''; $('#cal-ev-note').value = '';
+  toast('Termin eingetragen');
+});
+$('#cal-ev-title').addEventListener('keydown', ev => { if (ev.key === 'Enter'){ ev.preventDefault(); $('#cal-ev-add').click(); } });
+$('#cal-task-input').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const val = ev.currentTarget.value.trim();
+  if (!val) return;
+  add({ t:'task', text: val, date: calSel, done:0, star:0 });
+  ev.currentTarget.value = '';
+});
+
+$('#seg-shop').addEventListener('click', () => { listKind = 'shop'; render(); });
+$('#seg-wish').addEventListener('click', () => { listKind = 'wish'; render(); });
+function addListItem(){
+  const textEl = $('#l-text'), urlEl = $('#l-url'), priceEl = $('#l-price');
+  let text = textEl.value.trim();
+  let url = urlEl.value.trim();
+  if (!text && !url) return;
+  const asUrl = safeUrl(text);
+  if (asUrl && !url){ url = text; text = asUrl.hostname.replace(/^www\./,''); }
+  if (!text && url){ const u = safeUrl(url); text = u ? u.hostname.replace(/^www\./,'') : url; }
+  add({ t: listKind, text, url, price: listKind === 'wish' ? priceEl.value.trim() : '', note:'', done:0 });
+  textEl.value = ''; urlEl.value = ''; priceEl.value = '';
+  textEl.focus();
+}
+$('#l-add').addEventListener('click', addListItem);
+$('#l-text').addEventListener('keydown', ev => { if (ev.key === 'Enter'){ ev.preventDefault(); addListItem(); } });
+$('#l-url').addEventListener('keydown', ev => { if (ev.key === 'Enter'){ ev.preventDefault(); addListItem(); } });
+$('#l-clear-done').addEventListener('click', () => {
+  const gone = ofType(listKind).filter(x => x[1].done);
+  gone.forEach(x => drop(x[0]));
+  toast(gone.length ? gone.length + ' entfernt' : 'Nichts abgehakt');
+});
+
+const dlgEv = $('#dlg-event');
+let eventTarget = todayIso();
+function openEventDialog(date, photoId){
+  eventTarget = date || dayCursor;
+  $('#qe-title').value = ''; $('#qe-time').value = ''; $('#qe-note').value = '';
+  $('#qe-date').value = eventTarget;
+  $('#dlg-event-title').textContent = 'Termin eintragen';
+  const shot = $('#qe-shot'), hint = $('#qe-shot-hint');
+  const ph = photoId ? rec(photoId) : null;
+  if (ph && ph.data){
+    shot.src = ph.data; shot.hidden = false; hint.hidden = false;
+    shot.onclick = () => { dlgEv.close(); openPhoto(photoId); };
+  } else {
+    shot.hidden = true; hint.hidden = true; shot.removeAttribute('src'); shot.onclick = null;
+  }
+  dlgEv.showModal(); $('#qe-title').focus();
+}
+$('#t-add-ev').addEventListener('click', () => openEventDialog(dayCursor));
+$('#qe-cancel').addEventListener('click', () => dlgEv.close());
+$('#qe-save').addEventListener('click', () => {
+  const title = $('#qe-title').value.trim();
+  if (!title){ $('#qe-title').focus(); return; }
+  /* Das Datumsfeld gewinnt: vom Zettel abgelesen kann es ein ganz anderer Tag sein. */
+  const date = $('#qe-date').value || eventTarget;
+  add({ t:'event', title, date, time: $('#qe-time').value || '', note: $('#qe-note').value.trim() });
+  dlgEv.close();
+  calSel = date;
+  toast('Termin am ' + longDate(date) + ' eingetragen');
+});
+
+/* ---- Vorlesen ---- */
+$('#b-speak').addEventListener('click', () => {
+  const laeuft = ('speechSynthesis' in window) && speechSynthesis.speaking;
+  if (laeuft) stopSpeaking();
+  else speakText(briefingText());
+});
+if ('speechSynthesis' in window){
+  try{ speechSynthesis.addEventListener('voiceschanged', fillVoiceList); }catch(e){}
+}
+$('#set-voice').addEventListener('change', ev => {
+  try{ localStorage.setItem(VOICE_KEY, ev.currentTarget.value); }catch(e){}
+});
+$('#set-voice-test').addEventListener('click', () => {
+  speakText('Guten Tag. So klingt dein Briefing bei Clarity. Heute stehen zwei Termine an: um 14:30 Zahnarzt und um 19:00 Elternabend.');
+});
+$('#set-rate').addEventListener('input', showRate);
+$('#set-rate').addEventListener('change', ev => {
+  try{ localStorage.setItem(RATE_KEY, ev.currentTarget.value); }catch(e){}
+  showRate();
+  speakText('So klingt das Tempo.');
+});
+
+const dlgSet = $('#dlg-settings');
+function openSettings(){
+  $('#set-name').value = prefs().name || '';
+  setSync(syncState, $('#sync-txt').textContent);
+  fillVoiceList();
+  if (typeof SR !== 'undefined' && SR) $('#set-wake').checked = dauerhaft;
+  dlgSet.showModal();
+}
+$('#open-settings').addEventListener('click', openSettings);
+$('#open-settings-m').addEventListener('click', openSettings);
+$('#set-name').addEventListener('change', ev => { put('_prefs', { t:'prefs', name: ev.currentTarget.value.trim() }); paintSky(); });
+
+$('#set-sync-now').addEventListener('click', async ev => {
+  const b = ev.currentTarget;
+  b.disabled = true;
+  b.textContent = 'Gleicht ab…';
+  await pushCloud();
+  /* Neu laden holt anschliessend, was das andere Gerät hinterlegt hat. */
+  setTimeout(() => location.reload(), 600);
+});
+
+/* Sichern in drei Stufen: erst der richtige Weg, dann der klassische
+   Download, und wenn beides versperrt ist, wenigstens zum Kopieren. */
+function zeigeZumKopieren(data){
+  $('#copy-text').value = data;
+  $('#dlg-copy').showModal();
+  try{ $('#copy-text').select(); }catch(e){}
+}
+$('#set-export').addEventListener('click', async () => {
+  const data = JSON.stringify(S, null, 2);
+  const name = 'clarity-' + todayIso() + '.json';
+
+  let dl = null;
+  try{ dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; }catch(e){}
+  if (dl){
+    try{
+      await dl.save({ filename: name, data });
+      toast('Backup gespeichert');
+      return;
+    }catch(e){
+      if (e && e.code === 'declined'){ toast('Abgebrochen'); return; }
+    }
+  }
+  /* Ausserhalb eines fremden Rahmens funktioniert der normale Download. */
+  if (!document.querySelector('.mhead').classList.contains('eingebettet')){
+    try{
+      const blob = new Blob([data], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = h('a', { href:url, download:name });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      toast('Backup gespeichert');
+      return;
+    }catch(e){}
+  }
+  zeigeZumKopieren(data);
+});
+$('#copy-close').addEventListener('click', () => $('#dlg-copy').close());
+$('#copy-do').addEventListener('click', async () => {
+  const feld = $('#copy-text');
+  try{
+    await navigator.clipboard.writeText(feld.value);
+    toast('In die Zwischenablage kopiert');
+  }catch(e){
+    try{ feld.select(); document.execCommand('copy'); toast('Kopiert'); }
+    catch(e2){ toast('Bitte von Hand markieren und kopieren'); }
+  }
+});
+
+$('#set-import').addEventListener('click', () => $('#set-file').click());
+$('#set-file').addEventListener('change', ev => {
+  const file = ev.currentTarget.files && ev.currentTarget.files[0];
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const incoming = JSON.parse(String(fr.result));
+      if (incoming && typeof incoming.recs === 'object'){
+        /* Eine Sicherung einzuspielen heisst wiederherstellen, nicht abwaegen:
+           was in der Datei lebt, kommt zurueck — auch wenn hier inzwischen
+           eine juengere Löschmarke steht. */
+        const jetzt = Date.now();
+        let zurueck = 0;
+        for (const id in incoming.recs){
+          const r = incoming.recs[id];
+          if (!r) continue;
+          if (r.d){
+            if (!S.recs[id]) S.recs[id] = r;
+          } else {
+            const hier = S.recs[id];
+            if (!hier || hier.d || (hier.u || 0) < (r.u || 0)){
+              S.recs[id] = Object.assign({}, r, { u: jetzt });
+              zurueck++;
+            }
+          }
+        }
+        wipeAbsicht = false;
+        save(); paintSky();
+        toast(zurueck ? zurueck + ' Einträge zurückgeholt' : 'Backup war schon vollständig da');
+        return;
+      }
+      /* Auch eine schlichte Terminliste geht — so lassen sich abgelesene
+         Zettel als kleine Datei einspielen. */
+      const rows = Array.isArray(incoming) ? incoming : (incoming && Array.isArray(incoming.termine) ? incoming.termine : null);
+      if (!rows) throw new Error('Format');
+      let n = 0;
+      rows.forEach(r => {
+        const title = String(r.titel || r.title || '').trim();
+        const date = String(r.datum || r.date || '').trim();
+        if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+        add({ t:'event', title, date, time: String(r.zeit || r.time || '').trim(), note: String(r.notiz || r.note || '').trim() });
+        n++;
+      });
+      if (!n) throw new Error('Leer');
+      toast(n === 1 ? 'Ein Termin eingetragen' : n + ' Termine eingetragen');
+    }catch(e){ toast('Diese Datei passt nicht zu Clarity'); }
+  };
+  fr.readAsText(file);
+  ev.currentTarget.value = '';
+});
+let wipeArmed = false;
+$('#set-wipe').addEventListener('click', ev => {
+  const b = ev.currentTarget;
+  if (!wipeArmed){
+    wipeArmed = true;
+    b.textContent = 'Wirklich alles löschen?';
+    setTimeout(() => { wipeArmed = false; b.textContent = 'Alles löschen'; }, 5000);
+    return;
+  }
+  const now = Date.now();
+  for (const id in S.recs){ if (id !== '_prefs') S.recs[id] = { t: S.recs[id].t, d:1, u: now }; }
+  wipeArmed = false; b.textContent = 'Alles löschen';
+  wipeAbsicht = true;   /* jetzt darf auch ein leerer Stand hochgeladen werden */
+  save(); toast('Alles gelöscht');
+});
+
+/* ========================================================
+   7. Briefing des Tages
+   Von Claude am Stichtag zusammengestellt. Eine
+   veroeffentlichte Seite kann keine Nachrichten nachladen —
+   darum steht das Datum sichtbar dabei.
+   ======================================================== */
+const BRIEF = {
+  date: '2026-09-08',
+  items: [
+    { date:'2026-09-08', kind:'Politik', title:'Klingbeil bringt Haushalt über 555,4 Milliarden Euro ein',
+      text:'Mit der Haushaltswoche startet der Bundestag in die Beratung des Etats für das kommende Jahr.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-09-08', kind:'Gesellschaft', title:'PISA: deutsche Schüler so schwach wie nie gemessen',
+      text:'In Mathematik, Lesekompetenz und Naturwissenschaften erreichen die 15-Jährigen die niedrigsten je erhobenen Werte.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-09-08', kind:'Politik', title:'Zwei neue Minister im Bundestag vereidigt',
+      text:'Carsten Linnemann für Gesundheit und Steffen Bilger für Verkehr leisteten sechs Wochen nach ihrer Ernennung den Amtseid.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-09-08', kind:'Krypto', title:'Bitcoin rutscht unter 79.000 Dollar',
+      text:'Auf Bitstamp kostet ein Bitcoin 78.570 Dollar, 0,8 Prozent weniger als am Vortag. Ethereum hält sich bei 2.491 Dollar. Starke US-Arbeitsmarktdaten und höhere Anleiherenditen drücken auf die Risikofreude.',
+      src:'finanzen.net', url:'https://www.finanzen.net/nachricht/devisen/aktueller-marktbericht-zu-bitcoin-co-15923214' },
+    { date:'2026-09-08', kind:'Krypto', title:'Franken-Stablecoin geht in die aktive Testphase',
+      text:'UBS und ihre Partner bestätigen den Start; mit SIX und TWINT sind nun neun Unternehmen beteiligt.',
+      src:'nume.ch', url:'https://www.nume.ch/kryptowaehrungen-schweiz-krypto-news-und-kurse-am-8-9-2026/' },
+    { date:'2026-09-08', kind:'Börse', title:'Dax kämpft zäh um die 26.000er-Marke',
+      text:'Der Index notiert bei 25.950 Punkten, 0,2 Prozent im Minus. Hohe Öl- und Gaspreise lasten auf den Bewertungen, Brent nähert sich 100 Dollar. Vorn liegen Fresenius, VW und BMW, hinten Infineon und die Rückversicherer.',
+      src:'wallstreet-online', url:'https://www.wallstreet-online.de/nachricht/21347318-dax-index-klebt-26-000-punkten-fest' },
+    { date:'2026-09-08', kind:'Sport', title:'Champions League startet, Dortmund empfängt Villarreal',
+      text:'Anstoß ist um 21 Uhr, übertragen auf Amazon Prime. Zeitgleich treffen Real Madrid auf Inter und Porto auf Manchester City.',
+      src:'Sky Sport', url:'https://sport.sky.de/fussball/artikel/champions-league-uebertragung-spiele-heute-live-im-tv-und-stream/12407524/34171' },
+    { date:'2026-09-08', kind:'Wetter', title:'Nachts Gewitter über Osten und Südwesten',
+      text:'In der Nacht zu Mittwoch ziehen Schauer und Gewitter durch.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-08-23', kind:'Politik', title:'Grüne fordern Kurswechsel nach Merz-Besuch im Eifel-Brandgebiet',
+      text:'Nach dem Besuch des Bundeskanzlers im Waldbrandgebiet verlangt Fraktionschefin Katharina Dröge einen Klima-Notfallplan der Bundesregierung.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-08-23', kind:'Technik', title:'Hackerangriff legte britische Kraftwerksanlage vier Tage lahm',
+      text:'Der Angriff ereignete sich im Juli; die Täter sollen laut dem "Telegraph" Verbindungen in den Iran haben.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-08-23', kind:'Welt', title:'Zustand von Norwegens König Harald V. verschlechtert sich',
+      text:'Der 89-Jährige liegt seit Tagen im Krankenhaus und wird wegen einer bakteriellen Blutinfektion mit Antibiotika behandelt.',
+      src:'ZDFheute', url:'https://www.zdfheute.de/newsticker/schlagzeilen-100.html' },
+    { date:'2026-08-23', kind:'Welt', title:'Sieben Tote bei Unfall mit Falschfahrer nahe Middlesbrough',
+      text:'Unter den Opfern sind zwei Polizisten; ein Auto war auf der falschen Fahrbahnseite in ein Polizeifahrzeug gefahren.',
+      src:'NPR', url:'https://www.npr.org/sections/news' },
+    { date:'2026-08-23', kind:'Welt', title:'Urteil gegen Alex Jones von 50 auf 1,5 Millionen Dollar gekürzt',
+      text:'Ein texanisches Berufungsgericht reduzierte die Schadenersatzsumme deutlich.',
+      src:'NPR', url:'https://www.npr.org/sections/news' }
+  ]
+};
+let newsThema = 'Alle';
+try{ newsThema = localStorage.getItem('clarity.thema') || 'Alle'; }catch(e){}
+
+function newsSortiert(){
+  return BRIEF.items.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+function newsThemen(){
+  const gesehen = [];
+  newsSortiert().forEach(n => { if (gesehen.indexOf(n.kind) < 0) gesehen.push(n.kind); });
+  return ['Alle'].concat(gesehen);
+}
+function newsItem(n, alt){
+  const d = n.date ? fromIso(n.date) : null;
+  return h('article', { class:'news-item' + (alt ? ' alt' : '') }, [
+    h('span', { class:'news-kind', text: n.kind }),
+    h('div', { class:'news-body grow' }, [
+      h('h3', { text: n.title }),
+      h('p', { text: n.text }),
+      h('div', { class:'news-src' }, [
+        h('a', { href: n.url, target:'_blank', rel:'noopener noreferrer', text: n.src + ' ↗' }),
+        d ? h('span', { class:'stamp', text: '  ·  ' + d.getDate() + '. ' + DE_MON[d.getMonth()] }) : null
+      ])
+    ])
+  ]);
+}
+function renderNews(){
+  /* Themenknöpfe */
+  const themenBox = $('#b-themen'); clear(themenBox);
+  newsThemen().forEach(t => {
+    themenBox.appendChild(h('button', {
+      class:'thema', type:'button', 'aria-pressed': String(t === newsThema),
+      text: t,
+      onclick: () => {
+        newsThema = t;
+        try{ localStorage.setItem('clarity.thema', t); }catch(e){}
+        renderNews();
+      }
+    }));
+  });
+
+  const alle = newsSortiert();
+  const neuestes = alle.length ? alle[0].date : BRIEF.date;
+  const gewaehlt = newsThema === 'Alle' ? alle : alle.filter(n => n.kind === newsThema);
+
+  const box = $('#b-news'); clear(box);
+  let trennerGesetzt = false;
+  gewaehlt.forEach(n => {
+    const alt = n.date !== neuestes;
+    if (alt && !trennerGesetzt){
+      box.appendChild(h('div', { class:'news-trenner', text:'Früher' }));
+      trennerGesetzt = true;
+    }
+    box.appendChild(newsItem(n, alt));
+  });
+  $('#b-news-leer').hidden = gewaehlt.length > 0;
+
+  const d = fromIso(neuestes);
+  $('#b-stamp').textContent = 'Neuestes ' + d.getDate() + '. ' + DE_MON[d.getMonth()];
+  const stale = neuestes !== todayIso();
+  $('#b-stale').hidden = !stale;
+  if (stale){
+    $('#b-stale-txt').textContent = 'Die jüngsten Meldungen sind vom ' + d.getDate() + '. ' + DE_MON[d.getMonth()] +
+      '. Eine veröffentlichte Seite kann keine Nachrichten nachladen — bitte Claude um „Clarity-Briefing aktualisieren“, dann steht hier der neue Tag.';
+  }
+}
+
+/* ========================================================
+   7b. Optimus
+   Kein Sprachmodell — das kann eine veroeffentlichte Seite nicht.
+   Er kennt dafuer alles, was in Clarity steht, versteht eine feste
+   Menge Fragen und Befehle und arbeitet ohne Netz und ohne Kosten.
+   ======================================================== */
+const WEEKDAYS = ['sonntag','montag','dienstag','mittwoch','donnerstag','freitag','samstag'];
+const OP_CHIPS = ['Was steht heute an?','Nächster Termin','Was ist offen?','Einkaufsliste','Zitat','Was kannst du?'];
+let opStarted = '';
+let letzteFrage = null;   /* 'tasks' oder 'events' — fuer Anschlussfragen */
+
+function opBubble(who, nodes){
+  const chat = $('#op-chat');
+  const msg = h('div', { class:'msg' + (who === 'me' ? ' me' : '') });
+  msg.appendChild(h('div', { class:'who' }, [
+    who === 'me' ? h('span', { text:'Du', style:'font-size:.62rem; font-weight:600' }) : icon('i-spark')
+  ]));
+  const bubble = h('div', { class:'bubble' });
+  [].concat(nodes).forEach(n => { if (n) bubble.appendChild(typeof n === 'string' ? h('p', { text:n }) : n); });
+  msg.appendChild(bubble);
+  chat.appendChild(msg);
+  try{ msg.scrollIntoView({ block:'nearest' }); }catch(e){}
+  return msg;
+}
+function opSay(){ return opBubble('op', Array.prototype.slice.call(arguments)); }
+function opMe(text){ return opBubble('me', [text]); }
+function opList(items){ return h('ul', {}, items.map(t => h('li', { text:t }))); }
+
+function parseDay(s){
+  if (/übermorgen/.test(s)) return addDays(todayIso(), 2);
+  if (/\bmorgen\b/.test(s)) return addDays(todayIso(), 1);
+  if (/\bheute\b/.test(s)) return todayIso();
+  if (/\bgestern\b/.test(s)) return addDays(todayIso(), -1);
+  const m = s.match(/(\d{1,2})\.\s*(\d{1,2})\.?\s*(\d{4})?/);
+  if (m){
+    const jahr = m[3] ? +m[3] : fromIso(todayIso()).getFullYear();
+    const d = new Date(jahr, +m[2] - 1, +m[1]);
+    if (!m[3] && iso(d) < todayIso()) d.setFullYear(jahr + 1);
+    return iso(d);
+  }
+  for (let i = 0; i < 7; i++){
+    if (s.indexOf(WEEKDAYS[i]) >= 0){
+      let diff = (i - fromIso(todayIso()).getDay() + 7) % 7;
+      if (diff === 0) diff = 7;
+      return addDays(todayIso(), diff);
+    }
+  }
+  return null;
+}
+function parseTime(s){
+  let m = s.match(/(\d{1,2})[:.](\d{2})/);
+  if (m) return String(Math.min(23, +m[1])).padStart(2,'0') + ':' + m[2];
+  m = s.match(/(\d{1,2})\s*uhr/);
+  if (m) return String(Math.min(23, +m[1])).padStart(2,'0') + ':00';
+  return '';
+}
+/* Datums- und Zeitangaben aus dem Titel schneiden, damit dort nicht
+   "Termin am 12.9. um 14:30 Zahnarzt" stehen bleibt. */
+function stripWhen(text){
+  return text
+    .replace(/\b(am|um|den)\b/gi, ' ')
+    /* Erst die Uhrzeiten, sonst frisst das Datumsmuster die Stunde mit. */
+    .replace(/\d{1,2}[:.]\d{2}/g, ' ')
+    .replace(/\d{1,2}\s*uhr/gi, ' ')
+    .replace(/\d{1,2}\.\s*\d{1,2}\.?(?:\s*\d{4})?/g, ' ')
+    .replace(/\b(heute|morgen|übermorgen|gestern|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    /* Füllwörter, die ohne ihre Zeitangabe sinnlos herumstehen. */
+    .replace(/[\s,]*\b(bis|für|ab|vor|gegen|gleich)\b[\s,]*$/i, '')
+    .trim();
+}
+
+function opTasksFor(date){
+  letzteFrage = 'tasks';
+  const rows = tasksOn(date);
+  const open = rows.filter(x => !x[1].done);
+  const wann = date === todayIso() ? 'heute' : relDay(date);
+  if (!rows.length) return opSay('Für ' + wann + ' steht nichts auf der Liste.');
+  if (!open.length) return opSay('Für ' + wann + ' ist alles erledigt — ' + rows.length + ' von ' + rows.length + ' abgehakt.');
+  return opSay(
+    'Für ' + wann + ' ' + (open.length === 1 ? 'steht eine Aufgabe an' : 'stehen ' + open.length + ' Aufgaben an') + ':',
+    opList(open.map(x => x[1].text + (x[1].star ? '  ★' : ''))),
+    rows.length > open.length ? (rows.length - open.length) + ' hast du schon abgehakt.' : null
+  );
+}
+function opEventsFor(date){
+  letzteFrage = 'events';
+  const evs = eventsOn(date);
+  const wann = date === todayIso() ? 'heute' : relDay(date);
+  if (!evs.length) return opSay('Termine hast du ' + wann + ' keine.');
+  return opSay('Termine ' + wann + ':',
+    opList(evs.map(x => (x[1].time ? x[1].time + ' Uhr — ' : 'ganztags — ') + x[1].title + (x[1].note ? ' (' + x[1].note + ')' : ''))));
+}
+function opNextEvent(){
+  const t = todayIso(), jetzt = clock(new Date());
+  const next = ofType('event')
+    .filter(x => x[1].date > t || (x[1].date === t && (x[1].time || '23:59') >= jetzt))
+    .sort((a,b) => (a[1].date + (a[1].time||'99:99')).localeCompare(b[1].date + (b[1].time||'99:99')))[0];
+  if (!next) return opSay('Es steht kein Termin an.');
+  const r = next[1];
+  return opSay('Als Nächstes: ' + r.title + ' — ' + relDay(r.date) + (r.time ? ' um ' + r.time + ' Uhr' : '') + (r.note ? '. ' + r.note : '') + '.');
+}
+/* Themen, nach denen Optimus im Briefing suchen kann */
+const THEMEN_WORTE = [
+  { thema:'Krypto',       muster:/(krypto|bitcoin|ethereum|stablecoin|\bbtc\b|coin)/ },
+  { thema:'Börse',        muster:/(börse|boerse|aktie|aktien|\bdax\b|\betf\b|fonds|kurse|finanzwelt|finanzen)/ },
+  { thema:'Sport',        muster:/(sport|fußball|fussball|bundesliga|champions)/ },
+  { thema:'Politik',      muster:/(politik|bundestag|regierung|haushalt|minister)/ },
+  { thema:'Wetter',       muster:/(wetter|regen|gewitter)/ },
+  { thema:'Gesellschaft', muster:/(schule|bildung|pisa|gesellschaft)/ },
+  { thema:'Technik',      muster:/(technik|hacker|cyber)/ },
+  { thema:'Welt',         muster:/(ausland|international)/ }
+];
+function opNews(thema){
+  const alle = newsSortiert().filter(n => !thema || n.kind === thema);
+  if (!alle.length) return opSay('Zu „' + thema + '" liegt nichts im Briefing.');
+  const neuestes = alle[0].date;
+  const frisch = alle.filter(n => n.date === neuestes);
+  const d = fromIso(neuestes);
+  const kopf = (thema ? thema + ', Stand ' : 'Die Meldungen vom ') + d.getDate() + '. ' + DE_MON[d.getMonth()] + ':';
+  opSay(kopf, opList(frisch.map(n => n.title)));
+  if (thema === 'Wetter') opSay('Das ist die Meldung aus dem Briefing, keine aktuelle Messung.');
+  if (frisch.length < alle.length) opSay('Älteres dazu steht weiter unten im Briefing — dort kannst du nach Thema filtern.');
+  if (neuestes !== todayIso()) opSay('Frischer wird es erst, wenn Claude das Briefing erneuert.');
+}
+function opHelp(){
+  return opSay(
+    'Ich arbeite mit dem, was in Clarity steht — ohne Netz, ohne Kosten. Frag mich zum Beispiel:',
+    opList([
+      'Was steht heute an? — geht auch mit morgen, am Freitag, am 12.9.',
+      'Wann ist mein nächster Termin?',
+      'Was ist noch offen?',
+      'Was muss ich einkaufen?',
+      'Wie weit bin ich mit der Routine?',
+      'Wann geht die Sonne unter?'
+    ]),
+    'Eintragen kannst du mir auch etwas: „Trag ein: Rechnung zahlen", „Termin am 12.9. um 14:30 Zahnarzt", „Kaufen: Milch", „Erledigt: Rechnung".',
+    'Was ich nicht kann: frei plaudern oder etwas wissen, das nicht in Clarity steht. Dafür fragst du besser Claude.'
+  );
+}
+
+/* ---------- Gesprochene Sätze verstehen ----------
+   „Schreib auf meine Einkaufsliste, dass ich Zwiebeln kaufen muss"
+   ist keine Befehlszeile, sondern ein Satz. Hier wird das Ziel
+   herausgelesen und alles Beiwerk abgeschnitten. */
+const LISTEN_ZIELE = [
+  { ziel:'shop', muster:/(einkaufsliste|einkaufszettel|einkaufen|supermarkt|besorgungen)/, name:'Einkaufsliste' },
+  { ziel:'wish', muster:/(wunschliste|wunschzettel|wünsch)/,                                name:'Wunschliste' },
+  { ziel:'task', muster:/(aufgabenliste|aufgabe|to ?do|merkliste)/,                          name:'Aufgabenliste' }
+];
+function spracheEintrag(text){
+  let rest = String(text).replace(/^\s*(hey|hallo|hi|ok|okay)?[,\s]*optimus\b[,.!]?\s*/i, '');
+  const s = rest.toLowerCase();
+
+  /* Fragen sind keine Eintragungen. */
+  if (/^(was|welche|wie|wer|wann|wo|zeig|steht|gibt)/.test(s.trim())) return null;
+  const schreibt = /(schreib|notier|setz|pack|füg|trag|merk|nimm|kauf|besorg|brauch|muss|möchte|will)/.test(s);
+  if (!schreibt) return null;
+
+  let treffer = null;
+  for (const z of LISTEN_ZIELE){ if (z.muster.test(s)) { treffer = z; break; } }
+  if (!treffer) return null;
+
+  /* Die Listenangabe kann vorn oder hinten stehen — sie wird dort
+     entfernt, wo sie steht, samt der Präposition davor. */
+  rest = rest.replace(/\b(?:auf|in|zu|zur|zum)?\s*(?:die|der|den|meine|meinen)?\s*(?:einkaufsliste|einkaufszettel|wunschliste|wunschzettel|aufgabenliste|merkliste)\b[,:]?/gi, ' ');
+  /* Das befehlende Verb am Anfang. */
+  rest = rest.replace(/^\s*(?:schreib\w*|notier\w*|setz\w*|pack\w*|füg\w*|trag\w*|merk\w*|nimm|tu|mach)\b\s*/i, ' ');
+
+  rest = rest
+    .replace(/\b(dass|das)\s+ich\b/gi, ' ')
+    .replace(/\b(ich|mir|mich|noch|unbedingt|bitte|auch|dringend|mal|eben)\b/gi, ' ')
+    .replace(/\b(kaufen|einkaufen|besorgen|holen|mitnehmen|mitbringen|brauche|brauch|benötige|haben|hätte|bekommen|wünsche|muss|müssen|will|möchte|soll|hinzu|dazu|drauf|vergessen)\b/gi, ' ')
+    .replace(/^\s*(?:auf|in|die|der|den|meine|meinen|und|ein|eine)\b\s*/i, ' ')
+    .replace(/\s*\b(?:auf|in|die|der|den|meine|meinen|zur|zum|gern|gerne)\b\s*$/i, ' ')
+    .replace(/[.!?,;]+\s*$/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  if (!rest) return null;
+
+  const dinge = rest.split(/\s*,\s*|\s+und\s+/i).map(x => x.trim()).filter(Boolean);
+  if (!dinge.length) return null;
+  return { ziel: treffer.ziel, name: treffer.name, dinge: dinge.slice(0, 8) };
+}
+
+function opHandle(raw){
+  const text = String(raw || '').trim();
+  if (!text) return;
+  opMe(text);
+  const s = text.toLowerCase();
+  const tag = parseDay(s);
+  let m;
+
+  if (/(was kannst du|hilfe|wer bist du|hilf mir)/.test(s)) return opHelp();
+
+  /* Gesprochener Satz mit Listenziel — vor allen Befehlsmustern. */
+  const gesagt = spracheEintrag(text);
+  if (gesagt){
+    gesagt.dinge.forEach(d => {
+      if (gesagt.ziel === 'task') add({ t:'task', text:d, date: tag || todayIso(), done:0, star:0 });
+      else add({ t: gesagt.ziel, text:d, url:'', note:'', price:'', done:0 });
+    });
+    const liste = gesagt.dinge.length === 1 ? gesagt.dinge[0] : joinDe(gesagt.dinge);
+    const wo = gesagt.ziel === 'task' ? 'als Aufgabe' : 'auf der ' + gesagt.name;
+    return opSay(liste + ' ' + wo + ' notiert.');
+  }
+
+  /* --- Befehle --- */
+  m = text.match(/^(?:trag(?:e)?\s+ein|notier(?:e)?|neue aufgabe|aufgabe|merk(?:e)? dir|erinnere mich an)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    const titel = stripWhen(m[1]) || m[1].trim();
+    const datum = tag || todayIso();
+    add({ t:'task', text: titel, date: datum, done:0, star:0 });
+    return opSay('Eingetragen: ' + titel + ' für ' + (datum === todayIso() ? 'heute' : relDay(datum)) + '.');
+  }
+  m = text.match(/^(?:termin|treffen)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    const zeit = parseTime(s);
+    const titel = stripWhen(m[1]) || 'Termin';
+    const datum = tag || todayIso();
+    add({ t:'event', title: titel, date: datum, time: zeit, note:'' });
+    calSel = datum;
+    return opSay('Termin steht: ' + titel + ' am ' + longDate(datum) + (zeit ? ' um ' + zeit + ' Uhr' : '') + '.');
+  }
+  m = text.match(/^(?:kauf(?:en)?|einkauf(?:en)?|besorg(?:en)?)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    add({ t:'shop', text: m[1].trim(), url:'', note:'', price:'', done:0 });
+    return opSay(m[1].trim() + ' steht auf der Einkaufsliste.');
+  }
+  m = text.match(/^(?:wunsch|wünsch(?:e)? mir)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    add({ t:'wish', text: m[1].trim(), url:'', note:'', price:'', done:0 });
+    return opSay(m[1].trim() + ' steht auf der Wunschliste.');
+  }
+  m = text.match(/^(?:verschieb(?:e)?|schieb(?:e)?)\b\s*(.+?)\s+(?:auf|nach)\s+(.+)$/i);
+  if (m){
+    const suche = m[1].trim().toLowerCase();
+    const ziel = parseDay(m[2].toLowerCase());
+    const treffer = ofType('task').filter(x => !x[1].done && x[1].text.toLowerCase().indexOf(suche) >= 0)[0];
+    if (!treffer) return opSay('Ich finde keine offene Aufgabe mit „' + m[1].trim() + '".');
+    if (!ziel) return opSay('Auf wann denn? Sag zum Beispiel „auf morgen" oder „auf den 15.9.".');
+    put(treffer[0], { date: ziel });
+    return opSay(treffer[1].text + ' steht jetzt auf ' + (ziel === todayIso() ? 'heute' : relDay(ziel)) + '.');
+  }
+  m = text.match(/^(?:lösch(?:e)?|entferne|streich(?:e)?|nimm weg)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    const suche = m[1].trim().toLowerCase();
+    const treffer = live().filter(x => {
+      const r = x[1];
+      const txt = (r.text || r.title || '').toLowerCase();
+      return txt && txt.indexOf(suche) >= 0 && ['task','event','shop','wish','routine'].indexOf(r.t) >= 0;
+    })[0];
+    if (!treffer) return opSay('Dazu finde ich nichts mit „' + m[1].trim() + '".');
+    const name = treffer[1].text || treffer[1].title;
+    drop(treffer[0]);
+    return opSay('Gelöscht: ' + name + '.');
+  }
+  m = text.match(/^(?:erledigt|fertig|hake?\s+ab|abhaken|abgehakt)\b\s*[:,-]?\s*(.+)$/i);
+  if (m){
+    const suche = m[1].trim().toLowerCase();
+    const treffer = ofType('task').filter(x => !x[1].done && x[1].text.toLowerCase().indexOf(suche) >= 0)
+      .concat(ofType('routine').filter(x => x[1].doneOn !== todayIso() && x[1].text.toLowerCase().indexOf(suche) >= 0))[0];
+    if (!treffer) return opSay('Dazu finde ich nichts Offenes mit „' + m[1].trim() + '".');
+    if (treffer[1].t === 'routine') put(treffer[0], { doneOn: todayIso() });
+    else put(treffer[0], { done:1, doneAt: Date.now() });
+    return opSay('Abgehakt: ' + treffer[1].text + '.');
+  }
+
+  /* --- Fragen --- */
+  if (/(nächste|naechste|nächster|kommende)r?\s*(termin|verabredung)/.test(s) || /wann.*(nächste|termin)/.test(s)) return opNextEvent();
+  if (/termin/.test(s)) return opEventsFor(tag || todayIso());
+  if (/(offen|liegen ?geblieben|rückstand|rueckstand|von früher|vergessen)/.test(s)){
+    const carry = carryTasks();
+    if (!carry.length) return opSay('Von früher ist nichts offen. Sauber.');
+    return opSay(carry.length === 1 ? 'Eine Sache ist liegen geblieben:' : carry.length + ' Sachen sind liegen geblieben:',
+      opList(carry.slice(0,10).map(x => x[1].text + ' — vom ' + relDay(x[1].date))));
+  }
+  if (/(einkauf|einkaufsliste|besorgen|supermarkt)/.test(s)){
+    const rows = ofType('shop').filter(x => !x[1].done);
+    if (!rows.length) return opSay('Die Einkaufsliste ist leer.');
+    return opSay(rows.length === 1 ? 'Ein Ding steht drauf:' : rows.length + ' Dinge stehen drauf:',
+      opList(rows.map(x => x[1].text)));
+  }
+  if (/(wunsch|wunschliste|wünsche)/.test(s)){
+    const rows = ofType('wish').filter(x => !x[1].done);
+    if (!rows.length) return opSay('Die Wunschliste ist leer.');
+    return opSay('Auf der Wunschliste:', opList(rows.map(x => x[1].text + (x[1].price ? ' — ' + x[1].price : ''))));
+  }
+  if (/routine/.test(s)){
+    const rows = routines(), t = todayIso();
+    if (!rows.length) return opSay('Du hast noch keine Routine angelegt.');
+    const offen = rows.filter(x => x[1].doneOn !== t);
+    if (!offen.length) return opSay('Deine Routine ist für heute komplett. Alle ' + rows.length + ' erledigt.');
+    return opSay(rows.length - offen.length + ' von ' + rows.length + ' erledigt. Es fehlen noch:', opList(offen.map(x => x[1].text)));
+  }
+  if (/(geschafft|fortschritt|wie weit|erledigt.*heute)/.test(s)){
+    const rows = tasksOn(todayIso());
+    const fertig = rows.filter(x => x[1].done).length;
+    if (!rows.length) return opSay('Für heute steht nichts auf der Liste.');
+    return opSay('Du hast ' + fertig + ' von ' + rows.length + ' Aufgaben erledigt.'
+      + (fertig === rows.length ? ' Damit ist der Tag abgehakt.' : ''));
+  }
+  if (/(sonne|sonnenuntergang|sonnenaufgang|dunkel|hell)/.test(s)){
+    const sun = sunTimes(new Date());
+    if (!sun) return opSay('Die Sonnenzeiten kann ich hier nicht bestimmen.');
+    return opSay('Die Sonne geht heute um ' + clock(sun.rise) + ' Uhr auf und um ' + clock(sun.set) + ' Uhr unter.');
+  }
+  if (/(zitat|spruch|weisheit)/.test(s)){
+    const q = quoteOf(todayIso());
+    return opSay('„' + q.t + '"', '— ' + q.a);
+  }
+  /* Themenfragen ans Briefing */
+  for (const t of THEMEN_WORTE){
+    if (t.muster.test(s)) return opNews(t.thema);
+  }
+  if (/(nachricht|news|briefing|passiert|schlagzeile)/.test(s)) return opNews(null);
+
+  /* Anschlussfrage: „und morgen?" führt die letzte Frage fort. */
+  if (tag && /^(und|wie sieht|was ist mit|und was)\b/.test(s)){
+    return letzteFrage === 'events' ? opEventsFor(tag) : opTasksFor(tag);
+  }
+  if (/(was|welche|zeig|liste|steht an|vor)/.test(s) || tag) return opTasksFor(tag || todayIso());
+
+  return opSay('Das habe ich nicht verstanden.',
+    'Ich kenne Aufgaben, Termine, Routine, deine Listen und das Briefing. Frag etwa „Was steht morgen an?" oder „Was gibt es zu Krypto?" — mit „Was kannst du?" zeige ich dir alles.');
+}
+
+function opDaily(){
+  const t = todayIso();
+  const open = tasksOn(t).filter(x => !x[1].done);
+  const evs = eventsOn(t);
+  const carry = carryTasks().length;
+  const rout = routines();
+
+  if (!open.length && !evs.length) opSay('Dein Tag ist frei — nichts auf der Liste, kein Termin.');
+  else {
+    if (open.length) opSay(open.length === 1 ? 'Eine Aufgabe wartet auf dich:' : open.length + ' Aufgaben warten auf dich:',
+      opList(open.slice(0,8).map(x => x[1].text + (x[1].star ? '  ★' : ''))));
+    else opSay('Auf der Aufgabenliste steht heute nichts.');
+    if (evs.length) opSay(evs.length === 1 ? 'Ein Termin steht an:' : evs.length + ' Termine stehen an:',
+      opList(evs.map(x => (x[1].time ? x[1].time + ' Uhr — ' : 'ganztags — ') + x[1].title)));
+  }
+  if (carry) opSay('Außerdem ' + (carry === 1 ? 'ist eine Aufgabe' : 'sind ' + carry + ' Aufgaben') + ' von früher offen. Sag „Was ist offen?", dann zeige ich sie dir.');
+  if (rout.length){
+    const fertig = rout.filter(x => x[1].doneOn === t).length;
+    if (fertig < rout.length) opSay('Von deiner Routine fehlen noch ' + (rout.length - fertig) + ' von ' + rout.length + '.');
+  }
+}
+function opInit(){
+  const box = $('#op-chips');
+  if (!box.childElementCount){
+    OP_CHIPS.forEach(t => box.appendChild(h('button', { class:'chip-btn', type:'button', text:t, onclick: () => opHandle(t) })));
+  }
+  const t = todayIso();
+  if (opStarted === t) return;
+  opStarted = t;
+  clear($('#op-chat'));
+  const d = fromIso(t);
+  const name = (prefs().name || '').trim();
+  opSay((currentGreet || 'Hallo.') + ' Ich bin Optimus' + (name ? ', ' + name : '') + ' und habe deinen Tag im Blick.',
+        'Heute ist ' + DE_DAY[d.getDay()] + ', der ' + d.getDate() + '. ' + DE_MON[d.getMonth()] + '.');
+  opDaily();
+}
+$('#op-input').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const val = ev.currentTarget.value;
+  ev.currentTarget.value = '';
+  opHandle(val);
+});
+
+/* ========================================================
+   7c. Zuhören
+   Die Spracherkennung des Browsers, nichts Eigenes. Sie braucht
+   das Mikrofon — in einem fremden Rahmen ist das oft gesperrt,
+   dann sagt Optimus das ehrlich.
+   ======================================================== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const WAKE_KEY = 'clarity.wake';
+let erkennung = null;
+let hoertZu = false;      /* Erkennung läuft gerade */
+let dauerhaft = false;    /* Wachwort-Modus an */
+let warteAufBefehl = false;
+let sprichtGerade = false;
+
+function micStand(){
+  const b = $('#op-mic');
+  b.classList.toggle('an', hoertZu);
+  b.classList.toggle('wach', dauerhaft && !hoertZu);
+  b.setAttribute('aria-label', hoertZu ? 'Zuhören beenden' : 'Sprechen');
+}
+function micHinweis(txt){
+  const p = $('#op-mic-hint');
+  p.textContent = txt || '';
+  p.hidden = !txt;
+}
+function antwortVorlesen(){
+  /* Die letzte Antwort von Optimus laut sagen — der Kreis schließt sich. */
+  const msgs = [].slice.call($('#op-chat').children).filter(m => !m.classList.contains('me'));
+  const letzte = msgs[msgs.length - 1];
+  if (!letzte) return;
+  const txt = letzte.querySelector('.bubble').textContent.trim();
+  if (!txt) return;
+  sprichtGerade = true;
+  if (hoertZu) stoppErkennung(true);   /* nicht sich selbst zuhören */
+  speakText(txt);
+  const warten = setInterval(() => {
+    if (!('speechSynthesis' in window) || !speechSynthesis.speaking){
+      clearInterval(warten);
+      sprichtGerade = false;
+      if (dauerhaft) startErkennung(true);
+    }
+  }, 400);
+}
+function fuehreAus(text){
+  $('#op-input').value = '';
+  opHandle(text);
+  antwortVorlesen();
+}
+function verarbeiteSprache(text){
+  const s = String(text || '').trim();
+  if (!s) return;
+  if (dauerhaft && !warteAufBefehl){
+    const m = s.match(/(?:^|\b)(?:hey|hallo|hi|ok|okay)?[,\s]*optimus\b[,.!]?\s*(.*)$/i);
+    if (!m) return;                       /* ohne Wachwort bleibt er still */
+    const rest = (m[1] || '').trim();
+    if (!rest){
+      warteAufBefehl = true;
+      opSay('Ich höre.');
+      antwortVorlesen();
+      return;
+    }
+    warteAufBefehl = false;
+    return fuehreAus(rest);
+  }
+  warteAufBefehl = false;
+  fuehreAus(s.replace(/^\s*(hey|hallo|hi|ok|okay)?[,\s]*optimus\b[,.!]?\s*/i, ''));
+}
+function stoppErkennung(leise){
+  dauerhaft = leise ? dauerhaft : false;
+  hoertZu = false;
+  if (erkennung){ try{ erkennung.onend = null; erkennung.stop(); }catch(e){} }
+  micStand();
+}
+function startErkennung(dauer){
+  if (!SR){ micHinweis('Dieser Browser versteht keine Sprache.'); return; }
+  if (sprichtGerade) return;
+  try{ if (erkennung) { erkennung.onend = null; erkennung.abort(); } }catch(e){}
+  erkennung = new SR();
+  erkennung.lang = 'de-DE';
+  erkennung.continuous = !!dauer;
+  erkennung.interimResults = true;
+  erkennung.maxAlternatives = 1;
+
+  erkennung.onstart = () => { hoertZu = true; micStand(); micHinweis(dauer ? 'Ich höre auf „Hey Optimus".' : 'Sprich einfach.'); };
+  erkennung.onresult = ev => {
+    let fertig = '', laufend = '';
+    for (let i = ev.resultIndex; i < ev.results.length; i++){
+      const r = ev.results[i];
+      if (r.isFinal) fertig += r[0].transcript;
+      else laufend += r[0].transcript;
+    }
+    if (laufend) $('#op-input').value = laufend;
+    if (fertig) verarbeiteSprache(fertig);
+  };
+  erkennung.onerror = ev => {
+    const code = ev && ev.error;
+    hoertZu = false; micStand();
+    if (code === 'not-allowed' || code === 'service-not-allowed'){
+      dauerhaft = false;
+      $('#set-wake').checked = false;
+      micHinweis('Das Mikrofon ist hier gesperrt. In diesem Fenster erlaubt claude.ai keinen Zugriff — auf deiner eigenen Seite funktioniert es.');
+    } else if (code === 'no-speech'){
+      micHinweis('Nichts gehört.');
+    } else if (code !== 'aborted'){
+      micHinweis('Die Spracherkennung hat abgebrochen.');
+    }
+  };
+  erkennung.onend = () => {
+    hoertZu = false; micStand();
+    /* Der Dauermodus schläft nach jeder Pause ein — hier wieder aufwecken. */
+    if (dauerhaft && !sprichtGerade && !document.hidden){
+      setTimeout(() => { try{ erkennung.start(); }catch(e){} }, 400);
+    } else if (!dauerhaft){
+      micHinweis('');
+    }
+  };
+  try{ erkennung.start(); }
+  catch(e){ hoertZu = false; micStand(); }
+}
+
+if (SR){
+  $('#op-mic').hidden = false;
+  $('#set-wake-row').hidden = false;
+  try{ dauerhaft = localStorage.getItem(WAKE_KEY) === '1'; }catch(e){}
+  $('#op-mic').addEventListener('click', () => {
+    if (hoertZu) stoppErkennung(dauerhaft);
+    else startErkennung(dauerhaft);
+  });
+  $('#set-wake').addEventListener('change', ev => {
+    dauerhaft = ev.currentTarget.checked;
+    try{ localStorage.setItem(WAKE_KEY, dauerhaft ? '1' : '0'); }catch(e){}
+    if (dauerhaft) startErkennung(true); else stoppErkennung(false);
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stoppErkennung(true);
+    else if (dauerhaft && !hoertZu) startErkennung(true);
+  });
+}
+
+/* Laeuft die Seite in einem fremden Rahmen, zeigt der schon den Namen an. */
+try{
+  if (window.self !== window.top) document.querySelector('.mhead').classList.add('eingebettet');
+}catch(e){
+  document.querySelector('.mhead').classList.add('eingebettet');
+}
+
+/* ---- Tab-Leiste beim Scrollen ausblenden ---- */
+const tabbar = document.querySelector('.tabbar');
+let letzteY = 0;
+function zeigeLeiste(){ tabbar.classList.remove('weg'); }
+window.addEventListener('scroll', () => {
+  const y = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+  const de = document.documentElement;
+  const amEnde = (window.innerHeight + y) >= (de.scrollHeight - 6);
+  if (y < 48 || amEnde || y < letzteY - 4) zeigeLeiste();
+  else if (y > letzteY + 6) tabbar.classList.add('weg');
+  letzteY = y;
+}, { passive:true });
+/* Beim Tippen in ein Feld und beim Wechsel des Bereichs gehoert sie wieder her. */
+document.addEventListener('focusin', ev => {
+  if ((ev.target.tagName || '').toLowerCase() === 'input') zeigeLeiste();
+});
+
+/* ========================================================
+   8. Start
+   ======================================================== */
+async function boot(){
+  const local = readLocal();
+  if (local && local.recs) S.recs = local.recs;
+
+  /* Je nachdem, unter welcher Adresse die Seite ausgeliefert wird,
+     kann der Datenpfad relativ oder absolut liegen — beides probieren. */
+  let remote = null;
+  for (const path of ['data/state.json', '/data/state.json']){
+    try{
+      const res = await fetch(path, { cache:'no-store' });
+      if (!res.ok) continue;
+      const parsed = await res.json();
+      if (parsed && parsed.recs){ remote = parsed; break; }
+    }catch(e){}
+  }
+  if (remote && remote.recs){
+    cloudFound = Object.keys(remote.recs).length;
+    S.recs = merge(S.recs, remote.recs);
+  }
+
+  try{
+    cloud = (window.claude && typeof window.claude.use === 'function')
+      ? await window.claude.use('artifact') : null;
+  }catch(e){ cloud = null; }
+
+  /* Nichts da? Dann kommt der eingebackene Startbestand zum Zug — aber nur
+     für Einträge, die weder hier noch in der Wolke existieren. Eine
+     Löschmarke bleibt eine Löschmarke, Gelöschtes kehrt nicht zurück. */
+  if (SEED && SEED.recs && liveCount(S.recs) === 0){
+    for (const id in SEED.recs){
+      if (!S.recs[id]) { S.recs[id] = SEED.recs[id]; seedUsed = true; }
+    }
+    if (seedUsed) try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  }
+
+  bootCount = liveCount(S.recs);
+  sessionStorage.removeItem('clarity.reloads');
+  setSync(cloud ? 'ok' : 'local', cloud ? 'Bereit' : 'Nur auf diesem Gerät');
+
+  /* Nach einer neuen Fassung der App kann die Wolkenkopie fehlen. Liegt hier
+     noch etwas, wird sie sofort wiederhergestellt — ohne Zutun. */
+  if (cloud && cloudFound === null && bootCount > 0){
+    pushCloud();
+    toast(seedUsed ? bootCount + ' Einträge wiederhergestellt' : 'Deine Einträge werden wieder gesichert');
+  } else if (seedUsed){
+    toast(bootCount + ' Einträge wiederhergestellt');
+  }
+
+  renderNews();
+  paintSky();
+  render();
+  go('today');
+
+  /* Um Mitternacht wechselt der Tag, ohne dass jemand etwas anklickt. */
+  let lastDay = todayIso();
+  function tick(){
+    paintSky();
+    const t = todayIso();
+    if (t !== lastDay){
+      if (calSel === lastDay){ calSel = t; calMonth = new Date(); }
+      if (dayCursor === lastDay) dayCursor = t;
+      lastDay = t;
+      renderNews();
+      render();
+    }
+  }
+  setInterval(tick, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+  window.addEventListener('pagehide', () => { if (cloud && pushTimer) pushCloud(); });
+}
+boot();
+})();
+</script>

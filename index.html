@@ -1,4 +1,11 @@
 <meta charset="utf-8">
+<!-- Ohne diese Zeile rechnet das Handy mit 980 Pixeln Breite und zeigt die
+     Fassung fuer den grossen Bildschirm: Seitenleiste, winzige Schrift. -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15607E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clarity">
 <title>Clarity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,6 +112,7 @@
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none !important}
+html{padding-top:env(safe-area-inset-top,0px)}
 body{
   margin:0; min-height:100vh;
   background:var(--sky3);
@@ -554,9 +562,15 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   .cal-layout{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
   .dayarrow.left{left:calc(216px + 12px)}
 }
+/* Die Grundform muss vor der Medienabfrage stehen, sonst ueberstimmt sie diese. */
+.daystep{display:none; gap:.15rem; margin-top:.35rem}
+.daystep .iconbtn{border:1px solid var(--line)}
 @media (hover:none){
-  /* Ohne Mauszeiger gibt es kein Heranfahren an den Rand — dann stehen die Pfeile fest da. */
-  .dayarrow{opacity:.45; pointer-events:auto}
+  /* Ohne Mauszeiger liessen sich die schwebenden Pfeile nicht hervorholen und
+     standen fest im Bild — mitten auf den Karten. Am Telefon wird stattdessen
+     gewischt, und im Tageskopf stehen zwei kleine Pfeile, die niemandem im Weg sind. */
+  .dayarrow{display:none}
+  .daystep{display:inline-flex}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important; transition-duration:.001ms !important}
@@ -681,6 +695,10 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
                 <h1 id="t-date">—</h1>
                 <p class="greet" id="t-greet"></p>
                 <button class="btn quiet backtoday" id="t-back-today" hidden style="margin-top:.3rem"><svg aria-hidden="true"><use href="#i-back"></use></svg>Zurück zu heute</button>
+                <div class="daystep" id="t-step">
+                  <button class="iconbtn" id="t-step-prev" type="button" aria-label="Ein Tag zurück"><svg aria-hidden="true"><use href="#i-left"></use></svg></button>
+                  <button class="iconbtn" id="t-step-next" type="button" aria-label="Ein Tag weiter"><svg aria-hidden="true"><use href="#i-right"></use></svg></button>
+                </div>
               </div>
               <div class="ring" id="t-ring" hidden>
                 <svg viewBox="0 0 44 44" aria-hidden="true">
@@ -2228,6 +2246,8 @@ function shiftDay(n){
 }
 arrowL.addEventListener('click', () => shiftDay(-1));
 arrowR.addEventListener('click', () => shiftDay(1));
+$('#t-step-prev').addEventListener('click', () => shiftDay(-1));
+$('#t-step-next').addEventListener('click', () => shiftDay(1));
 $('#t-back-today').addEventListener('click', () => { dayCursor = todayIso(); render(); });
 
 /* Die Zone richtet sich nach der wirklichen Lage des Pfeils. Vorher war sie

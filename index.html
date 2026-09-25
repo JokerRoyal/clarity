@@ -334,6 +334,8 @@ a{color:var(--accent); text-underline-offset:2px}
 .ev-title{font-weight:600}
 .ev-note{font-size:var(--fs-sm); color:var(--ink3)}
 .ev-mark{flex:0 0 3px; border-radius:99px; background:var(--accent); opacity:.5}
+.ev-klick{cursor:pointer; border-radius:6px}
+.ev:hover .ev-title{text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:3px}
 .ev + .ev{border-top:1px solid var(--line2)}
 
 /* ---------- Kalender ---------- */
@@ -469,6 +471,7 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
 
 /* ---------- Zettel ---------- */
 .shot{display:flex; align-items:center; gap:var(--sp2); flex-wrap:wrap}
+#t-photo-zone.ueber{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
 .photos{display:grid; grid-template-columns:repeat(auto-fill,minmax(82px,1fr)); gap:var(--sp2); margin-top:var(--sp3)}
 .photo{
   position:relative; aspect-ratio:3/4; padding:0; overflow:hidden;
@@ -479,6 +482,20 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   position:absolute; left:0; right:0; bottom:0; padding:.16rem .3rem;
   font-family:var(--mono); font-size:.6rem; color:#F4F6FB;
   background:linear-gradient(180deg,rgba(6,10,20,0) 0%,rgba(6,10,20,.72) 60%);
+}
+/* Das Archiv: alle Zettel an einem Ort, nach Monaten sortiert. */
+.archiv{max-height:58vh; overflow:auto; margin:0 -.25rem; padding:0 .25rem}
+.archiv-monat{
+  position:sticky; top:0; z-index:1; padding:.4rem 0 .3rem; margin-top:var(--sp3);
+  font-family:var(--mono); font-size:var(--fs-xs); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink3);
+  background:linear-gradient(180deg,var(--surf) 68%,transparent);
+}
+.archiv-monat:first-child{margin-top:0}
+.archiv .photos{margin-top:.25rem}
+.photo span i{
+  display:block; font-style:normal; font-family:var(--body); font-size:.62rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .viewer{max-width:min(540px,94vw)}
 .viewer img{width:100%; display:block; border-radius:var(--r2); background:#0B1020}
@@ -510,6 +527,10 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   transition:border-color .16s ease, color .16s ease;
 }
 .chip-btn:hover{border-color:var(--accent); color:var(--ink)}
+/* In der Vorschlagsliste heisst das Haekchen "wird eingetragen" —
+   dort also kein Durchstreichen. */
+#batch-list .item.done .item-text{text-decoration:none; color:var(--ink)}
+#batch-list .item:not(.done){opacity:.5}
 .mic{flex:0 0 32px; width:32px; height:32px; border:1px solid var(--line)}
 .mic.an{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
 .mic.an svg{animation:mikro 1.1s ease-in-out infinite}
@@ -591,6 +612,11 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     <path d="M4 8h3l1.4-2.2a1 1 0 0 1 .85-.47h5.5a1 1 0 0 1 .85.47L17 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a1 1 0 0 1 1-1Z"></path>
     <circle cx="12" cy="13.5" r="3.4"></circle>
+  </symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="4.5" width="18" height="15" rx="2.5"></rect>
+    <path d="M3 16l4.5-4.2a2 2 0 0 1 2.7 0L15 16m-1.5-1.4 2-1.8a2 2 0 0 1 2.7 0L21 15.5"></path>
+    <circle cx="8.5" cy="9" r="1.3"></circle>
   </symbol>
   <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     <rect x="9" y="3" width="6" height="11" rx="3"></rect>
@@ -739,13 +765,15 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
                 <button class="btn ghost" id="t-add-ev" style="margin-top:var(--sp3); width:100%"><svg aria-hidden="true"><use href="#i-cal"></use></svg>Termin eintragen</button>
               </section>
 
-              <section class="card">
-                <div class="card-head"><h2>Zettel</h2><span class="eyebrow" id="t-photo-count"></span></div>
+              <section class="card" id="t-photo-zone">
+                <div class="card-head"><h2>Zettel</h2><span class="row" style="gap:.35rem"><span class="eyebrow" id="t-photo-count"></span><button class="btn quiet" id="t-archiv-open">Alle Zettel</button></span></div>
                 <div class="shot">
-                  <button class="btn ghost" id="t-shoot"><svg aria-hidden="true"><use href="#i-cam"></use></svg>Zettel abfotografieren</button>
-                  <input type="file" id="t-photo-file" accept="image/*" capture="environment" hidden>
+                  <button class="btn ghost" id="t-shoot"><svg aria-hidden="true"><use href="#i-cam"></use></svg>Fotografieren</button>
+                  <button class="btn ghost" id="t-pick"><svg aria-hidden="true"><use href="#i-img"></use></svg>Bild auswählen</button>
+                  <input type="file" id="t-photo-cam" accept="image/*" capture="environment" hidden>
+                  <input type="file" id="t-photo-file" accept="image/*" hidden>
                 </div>
-                <p class="muted" id="t-photo-hint" style="font-size:var(--fs-xs); margin-top:.5rem">Das Bild bleibt an diesem Tag hängen. Zum Eintragen tippst du es an.</p>
+                <p class="muted" id="t-photo-hint" style="font-size:var(--fs-xs); margin-top:.5rem">Aus der Mediathek, aus einer Nachricht, per Einfügen mit Strg+V oder hier hineingezogen — alles geht. Das Bild bleibt an diesem Tag hängen.</p>
                 <div class="photos" id="t-photos"></div>
               </section>
 
@@ -800,7 +828,10 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
                   <svg aria-hidden="true"><use href="#i-info"></use></svg>
                   <input id="cal-ev-note" type="text" placeholder="Notiz oder Ort (optional)" autocomplete="off" aria-label="Notiz zum Termin">
                 </div>
-                <button class="btn" id="cal-ev-add"><svg aria-hidden="true"><use href="#i-plus"></use></svg>Termin hinzufügen</button>
+                <div class="row" style="flex-wrap:wrap">
+                  <button class="btn grow" id="cal-ev-add"><svg aria-hidden="true"><use href="#i-plus"></use></svg>Termin hinzufügen</button>
+                  <button class="btn ghost" id="cal-batch">Mehrere aus Text</button>
+                </div>
               </div>
               <div id="cal-photo-wrap" hidden>
                 <p class="eyebrow" style="margin-bottom:.4rem">Zettel</p>
@@ -984,10 +1015,52 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   <div class="sheet viewer">
     <h2 id="dlg-photo-title">Zettel</h2>
     <img id="photo-img" alt="Abfotografierter Zettel">
+    <div class="field">
+      <svg aria-hidden="true"><use href="#i-plus"></use></svg>
+      <input id="photo-name" type="text" placeholder="Bezeichnung — damit du ihn wiederfindest" autocomplete="off" aria-label="Bezeichnung des Zettels">
+    </div>
     <div class="sheet-acts">
       <button type="button" class="btn danger" id="photo-del">Löschen</button>
+      <button type="button" class="btn ghost" id="photo-day">Zum Tag</button>
       <button type="button" class="btn ghost" id="photo-close">Schließen</button>
-      <button type="button" class="btn" id="photo-toev">Termin daraus eintragen</button>
+      <button type="button" class="btn ghost" id="photo-batch">Mehrere Termine</button>
+      <button type="button" class="btn" id="photo-toev">Einen Termin</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-archiv" aria-labelledby="dlg-archiv-title">
+  <div class="sheet" style="max-width:min(620px,94vw)">
+    <h2 id="dlg-archiv-title">Alle Zettel</h2>
+    <div class="field">
+      <svg aria-hidden="true"><use href="#i-img"></use></svg>
+      <input id="archiv-suche" type="search" placeholder="Suchen: Bezeichnung, 19.9. oder September" autocomplete="off" aria-label="Zettel suchen">
+    </div>
+    <div class="archiv" id="archiv-box"></div>
+    <div class="empty" id="archiv-empty" hidden>Noch kein Zettel gespeichert.</div>
+    <p class="hint" id="archiv-meta" style="font-size:var(--fs-xs); color:var(--ink3)"></p>
+    <div class="sheet-acts">
+      <button type="button" class="btn ghost" id="archiv-close">Schließen</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-batch" aria-labelledby="dlg-batch-title">
+  <div class="sheet" style="max-width:min(580px,94vw)">
+    <h2 id="dlg-batch-title">Mehrere Termine auf einmal</h2>
+    <img id="batch-shot" alt="Der abfotografierte Zettel" hidden style="width:100%; border-radius:var(--r2); display:block; background:#0B1020">
+    <div id="batch-eingabe">
+      <p class="hint" style="font-size:var(--fs-sm); color:var(--ink2)">Eine Zeile je Termin — Datum, Uhrzeit, Bezeichnung. Zum Beispiel:</p>
+      <p class="num" style="font-size:var(--fs-xs); color:var(--ink3); margin:.3rem 0 .6rem">21.09.2026 10:20 VW Drainage Keller</p>
+      <textarea id="batch-text" rows="6" placeholder="21.09.2026 10:20 VW Drainage Keller&#10;28.09.2026 08:00 Werkstatt" style="width:100%; font-family:var(--mono); font-size:.78rem; background:var(--surf2); color:var(--ink); border:1px solid var(--line); border-radius:var(--r2); padding:.6rem; resize:vertical"></textarea>
+    </div>
+    <ul class="items" id="batch-list" hidden></ul>
+    <p class="hint" id="batch-fehler" hidden style="color:var(--warn)"></p>
+    <div class="sheet-acts">
+      <button type="button" class="btn ghost" id="batch-close">Abbrechen</button>
+      <button type="button" class="btn ghost" id="batch-back" hidden>Text ändern</button>
+      <button type="button" class="btn" id="batch-check">Vorschläge prüfen</button>
+      <button type="button" class="btn" id="batch-apply" hidden>Ausgewählte eintragen</button>
     </div>
   </div>
 </dialog>
@@ -1148,7 +1221,16 @@ function liveCount(recs){
   return n;
 }
 
-function uid(){ return 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+/* Die Kennung bestimmt die Reihenfolge der Listen. Ein Zaehler muss mit
+   hinein, sonst landen mehrere Eintraege aus derselben Millisekunde —
+   etwa sieben auf einmal eingefuegte Routinen — in zufaelliger Folge. */
+let uidZaehler = 0;
+function uid(){
+  uidZaehler = (uidZaehler + 1) % 1296;
+  return 'k' + Date.now().toString(36)
+       + uidZaehler.toString(36).padStart(2, '0')
+       + Math.random().toString(36).slice(2, 5);
+}
 function rec(id){ return S.recs[id]; }
 function live(){
   const out = [];
@@ -1468,10 +1550,18 @@ function listRow(id, r){
 }
 
 function eventRow(id, r){
+  /* Auf den Termin tippen heisst bearbeiten — Loeschen war bisher der
+     einzige Weg, etwas zu aendern, und das ist keiner. */
+  const oeffnen = () => openEventDialog(r.date, null, id);
   return h('div', { class:'ev' }, [
     h('div', { class:'ev-mark' }),
-    h('div', { class:'ev-time num', text: r.time || 'ganztags' }),
-    h('div', { class:'grow' }, [
+    h('div', { class:'ev-time num ev-klick', text: r.time || 'ganztags',
+      onclick: oeffnen }),
+    h('div', { class:'grow ev-klick', tabindex:'0', role:'button',
+      title:'Zum Bearbeiten antippen',
+      onclick: oeffnen,
+      onkeydown: ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); oeffnen(); } }
+    }, [
       h('div', { class:'ev-title', text: r.title }),
       r.note ? h('div', { class:'ev-note', text: r.note }) : null
     ]),
@@ -1490,6 +1580,7 @@ let listKind = 'shop';
 let showDone = false;
 let dayCursor = todayIso();   /* welcher Tag in der Tagesansicht steht */
 let paneKind = 'tasks';       /* Aufgaben oder Routine — bleibt pro Geraet */
+let archivOffen = false;      /* steht der Zettelschrank offen */
 try{ paneKind = localStorage.getItem('clarity.pane') === 'routine' ? 'routine' : 'tasks'; }catch(e){}
 
 function photosOn(date){
@@ -1674,6 +1765,74 @@ function renderPhotos(date, box, counter){
     h('span', { text: x[1].time || '' })
   ])));
   if (counter) counter.textContent = rows.length ? rows.length + (rows.length === 1 ? ' Bild' : ' Bilder') : '';
+  if (archivOffen) renderArchiv();
+}
+
+/* ---------- Das Archiv: jeder Zettel bleibt auffindbar ----------
+   Ein Bild haengt am Tag der Aufnahme. Wer es drei Wochen spaeter sucht,
+   soll nicht drei Wochen zurueckblaettern muessen. */
+function photosAll(){
+  return ofType('photo').sort((a, b) => {
+    const x = (a[1].date || '') + (a[1].time || '');
+    const y = (b[1].date || '') + (b[1].time || '');
+    if (x !== y) return x < y ? 1 : -1;
+    return a[0] < b[0] ? 1 : -1;
+  });
+}
+function photoLabel(r){
+  const d = fromIso(r.date);
+  return d.getDate() + '.' + (d.getMonth()+1) + '.';
+}
+/* Gesucht wird ueber Bezeichnung und ueber alles, was nach Datum aussieht:
+   "19.9.", "September", "2026-09-19", "Samstag". */
+function photoHeu(r){
+  const d = fromIso(r.date);
+  return [
+    r.name || '', r.date, r.time || '',
+    d.getDate() + '.' + (d.getMonth()+1) + '.',
+    d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.',
+    DE_MON[d.getMonth()], DE_DAY[d.getDay()], String(d.getFullYear())
+  ].join(' ').toLowerCase();
+}
+function renderArchiv(){
+  const box = $('#archiv-box');
+  const suche = $('#archiv-suche').value.trim().toLowerCase();
+  const alle = photosAll();
+  const rows = suche ? alle.filter(x => photoHeu(x[1]).indexOf(suche) >= 0) : alle;
+  clear(box);
+  let monat = '';
+  let gitter = null;
+  rows.forEach(x => {
+    const r = x[1];
+    const d = fromIso(r.date);
+    const m = DE_MON[d.getMonth()] + ' ' + d.getFullYear();
+    if (m !== monat){
+      monat = m;
+      box.appendChild(h('p', { class:'archiv-monat', text:m }));
+      gitter = h('div', { class:'photos' });
+      box.appendChild(gitter);
+    }
+    gitter.appendChild(h('button', {
+      class:'photo', type:'button',
+      'aria-label':'Zettel vom ' + longDate(r.date) + (r.name ? ': ' + r.name : '') + ' ansehen',
+      onclick: () => openPhoto(x[0])
+    }, [
+      h('img', { src:r.data, alt:'Abfotografierter Zettel', loading:'lazy' }),
+      h('span', {}, [
+        photoLabel(r) + (r.time ? ' ' + r.time : ''),
+        r.name ? h('i', { text:r.name }) : null
+      ])
+    ]));
+  });
+  $('#archiv-empty').hidden = rows.length > 0;
+  $('#archiv-empty').textContent = alle.length
+    ? 'Kein Zettel passt zu dieser Suche.'
+    : 'Noch kein Zettel gespeichert.';
+  const mb = (photoBytes() / 1048576).toFixed(1).replace('.', ',');
+  const platz = (PHOTO_BUDGET / 1048576).toFixed(1).replace('.', ',');
+  $('#archiv-meta').textContent = alle.length
+    ? alle.length + ' Zettel · ' + mb + ' von ' + platz + ' MB belegt'
+    : '';
 }
 
 /* ---------- Zitat des Tages: fester Vorrat, nach Datum durchgezaehlt ---------- */
@@ -2071,11 +2230,22 @@ arrowL.addEventListener('click', () => shiftDay(-1));
 arrowR.addEventListener('click', () => shiftDay(1));
 $('#t-back-today').addEventListener('click', () => { dayCursor = todayIso(); render(); });
 
+/* Die Zone richtet sich nach der wirklichen Lage des Pfeils. Vorher war sie
+   eine feste Zahl — der linke Pfeil steht aber neben der Seitenleiste und lag
+   damit ausserhalb seiner eigenen Zone: Er verschwand, sobald man auf ihn
+   zusteuerte. */
+function zoneLinks(){
+  const r = arrowL.getBoundingClientRect();
+  return r.width ? r.right + 90 : 130;
+}
+function zoneRechts(){
+  const r = arrowR.getBoundingClientRect();
+  return r.width ? r.left - 90 : innerWidth - 130;
+}
 window.addEventListener('mousemove', ev => {
   if (view !== 'today') return;
-  const near = 130;
-  arrowR.classList.toggle('show', innerWidth - ev.clientX < near);
-  arrowL.classList.toggle('show', ev.clientX < near);
+  arrowL.classList.toggle('show', ev.clientX < zoneLinks());
+  arrowR.classList.toggle('show', ev.clientX > zoneRechts());
 });
 document.addEventListener('keydown', ev => {
   if (view !== 'today') return;
@@ -2112,35 +2282,120 @@ $('#t-routine-input').addEventListener('keydown', ev => {
   add({ t:'routine', text: val, doneOn:'' });
   ev.currentTarget.value = '';
 });
+/* Mehrere Zeilen auf einmal einfügen — ein einzeiliges Feld wirft
+   Zeilenumbrüche sonst weg, darum hier selbst abfangen. */
+$('#t-routine-input').addEventListener('paste', ev => {
+  const daten = ev.clipboardData || window.clipboardData;
+  const text = daten ? daten.getData('text') : '';
+  if (!text || text.indexOf('\n') < 0) return;
+  ev.preventDefault();
+  const zeilen = text.split(/\r?\n/).map(z => z.trim()).filter(Boolean).slice(0, 30);
+  zeilen.forEach(z => add({ t:'routine', text: z, doneOn:'' }));
+  ev.currentTarget.value = '';
+  toast(zeilen.length === 1 ? 'Eine Routine angelegt' : zeilen.length + ' Routinen angelegt');
+});
 
 /* ---- Zettel fotografieren ---- */
 let photoOpen = null;
 const dlgPhoto = $('#dlg-photo');
-$('#t-shoot').addEventListener('click', () => $('#t-photo-file').click());
-$('#t-photo-file').addEventListener('change', async ev => {
+$('#t-shoot').addEventListener('click', () => $('#t-photo-cam').click());
+$('#t-pick').addEventListener('click', () => $('#t-photo-file').click());
+async function vomFeld(ev){
   const file = ev.currentTarget.files && ev.currentTarget.files[0];
   ev.currentTarget.value = '';
   if (file) await addPhoto(file, dayCursor);
+}
+$('#t-photo-file').addEventListener('change', vomFeld);
+$('#t-photo-cam').addEventListener('change', vomFeld);
+
+/* Bilder aus der Zwischenablage — geschickt bekommen, eingefügt, fertig. */
+document.addEventListener('paste', async ev => {
+  const teile = (ev.clipboardData && ev.clipboardData.items) || [];
+  for (let i = 0; i < teile.length; i++){
+    if (teile[i].type && teile[i].type.indexOf('image/') === 0){
+      const file = teile[i].getAsFile();
+      if (file){
+        ev.preventDefault();
+        if (view !== 'today') go('today');
+        await addPhoto(file, dayCursor);
+      }
+      return;
+    }
+  }
+});
+/* … und hineingezogen. */
+const zettelZone = $('#t-photo-zone');
+['dragenter','dragover'].forEach(e => zettelZone.addEventListener(e, ev => {
+  ev.preventDefault(); zettelZone.classList.add('ueber');
+}));
+['dragleave','dragend'].forEach(e => zettelZone.addEventListener(e, () => zettelZone.classList.remove('ueber')));
+zettelZone.addEventListener('drop', async ev => {
+  ev.preventDefault();
+  zettelZone.classList.remove('ueber');
+  const file = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (file && /^image\//.test(file.type)) await addPhoto(file, dayCursor);
 });
 function openPhoto(id){
   const r = rec(id);
   if (!r) return;
   photoOpen = id;
   $('#photo-img').src = r.data;
+  $('#photo-name').value = r.name || '';
   $('#dlg-photo-title').textContent = 'Zettel vom ' + longDate(r.date) + (r.time ? ', ' + r.time : '');
   dlgPhoto.showModal();
 }
-$('#photo-close').addEventListener('click', () => dlgPhoto.close());
+/* Die Bezeichnung wird beim Verlassen des Feldes gesichert — sie ist der
+   Faden, an dem man den Zettel spaeter aus dem Archiv zieht. */
+function photoNameSichern(){
+  if (!photoOpen) return;
+  const r = rec(photoOpen);
+  const wert = $('#photo-name').value.trim();
+  if (!r || (r.name || '') === wert) return;
+  put(photoOpen, { name: wert });
+  if (archivOffen) renderArchiv();
+}
+$('#photo-name').addEventListener('change', photoNameSichern);
+$('#photo-name').addEventListener('keydown', ev => {
+  if (ev.key === 'Enter'){ ev.preventDefault(); photoNameSichern(); toast('Bezeichnung gespeichert'); }
+});
+$('#photo-close').addEventListener('click', () => { photoNameSichern(); dlgPhoto.close(); });
 $('#photo-del').addEventListener('click', () => {
   if (photoOpen){ drop(photoOpen); photoOpen = null; toast('Zettel gelöscht'); }
   dlgPhoto.close();
+  if (archivOffen) renderArchiv();
+});
+$('#photo-day').addEventListener('click', () => {
+  const r = photoOpen ? rec(photoOpen) : null;
+  photoNameSichern();
+  dlgPhoto.close();
+  archivSchliessen();
+  if (r){ dayCursor = r.date; calSel = r.date; go('today'); }
 });
 $('#photo-toev').addEventListener('click', () => {
   const id = photoOpen;
   const r = id ? rec(id) : null;
+  photoNameSichern();
   dlgPhoto.close();
+  archivSchliessen();
   openEventDialog(r ? r.date : dayCursor, id);
 });
+
+/* ---- Das Archiv oeffnen und schliessen ---- */
+const dlgArchiv = $('#dlg-archiv');
+function archivSchliessen(){
+  if (!archivOffen) return;
+  archivOffen = false;
+  dlgArchiv.close();
+}
+$('#t-archiv-open').addEventListener('click', () => {
+  $('#archiv-suche').value = '';
+  renderArchiv();
+  archivOffen = true;
+  dlgArchiv.showModal();
+});
+$('#archiv-suche').addEventListener('input', renderArchiv);
+$('#archiv-close').addEventListener('click', archivSchliessen);
+dlgArchiv.addEventListener('close', () => { archivOffen = false; });
 $('#t-toggle-done').addEventListener('click', () => { showDone = !showDone; render(); });
 $('#t-carry-all').addEventListener('click', () => {
   const c = carryTasks();
@@ -2190,13 +2445,163 @@ $('#l-clear-done').addEventListener('click', () => {
   toast(gone.length ? gone.length + ' entfernt' : 'Nichts abgehakt');
 });
 
+/* ---------- Mehrere Termine aus Text ----------
+   Eine Zeile je Termin. Datum und Uhrzeit werden herausgeschnitten,
+   der Rest ist die Bezeichnung. */
+function parseTerminZeile(zeile){
+  let rest = String(zeile || '').trim();
+  if (!rest) return null;
+  let datum = null, zeit = '', m;
+
+  /* Zuerst die Uhrzeit — sonst frisst die Jahreszahl des Datums die
+     Stunde: aus "5.10. 14:30" wurde sonst das Jahr 2014. Der Punkt
+     zaehlt nur als Trenner, wenn "Uhr" dahintersteht. */
+  m = rest.match(/\b(\d{1,2}):(\d{2})\b/);
+  if (!m) m = rest.match(/\b(\d{1,2})\.(\d{2})\s*uhr\b/i);
+  if (m){
+    zeit = String(Math.min(23, +m[1])).padStart(2,'0') + ':' + m[2];
+    rest = rest.replace(m[0], ' ');
+  } else {
+    m = rest.match(/\b(\d{1,2})\s*uhr\b/i);
+    if (m){
+      zeit = String(Math.min(23, +m[1])).padStart(2,'0') + ':00';
+      rest = rest.replace(m[0], ' ');
+    }
+  }
+
+  m = rest.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m){
+    datum = iso(new Date(+m[1], +m[2] - 1, +m[3]));
+    rest = rest.replace(m[0], ' ');
+  } else {
+    m = rest.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4}|\d{2})?/);
+    if (m){
+      const tag = +m[1], monat = +m[2];
+      let jahr = m[3] ? +m[3] : 0;
+      if (jahr && jahr < 100) jahr += 2000;
+      if (!jahr){
+        jahr = fromIso(todayIso()).getFullYear();
+        if (iso(new Date(jahr, monat - 1, tag)) < todayIso()) jahr++;
+      }
+      const d = new Date(jahr, monat - 1, tag);
+      if (d.getMonth() !== monat - 1) return null;   /* 31.02. und Ähnliches */
+      datum = iso(d);
+      rest = rest.replace(m[0], ' ');
+    }
+  }
+  if (!datum) return null;
+
+  const titel = rest
+    .replace(/\b(uhr|ganztags|ganztägig|ganztaegig)\b/gi, ' ')
+    .replace(/\b(mo|di|mi|do|fr|sa|so|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b\.?/gi, ' ')
+    .replace(/^[\s,;:.–—-]+/, '')
+    .replace(/[\s,;:.–—-]+$/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  return { date: datum, time: zeit, title: titel || 'Termin' };
+}
+
+const dlgBatch = $('#dlg-batch');
+let batchVorschlaege = [];
+function oeffneBatch(photoId){
+  const ph = photoId ? rec(photoId) : null;
+  const shot = $('#batch-shot');
+  if (ph && ph.data){ shot.src = ph.data; shot.hidden = false; }
+  else { shot.hidden = true; shot.removeAttribute('src'); }
+  $('#batch-text').value = '';
+  zeigeBatchEingabe();
+  dlgBatch.showModal();
+  $('#batch-text').focus();
+}
+function zeigeBatchEingabe(){
+  $('#batch-eingabe').hidden = false;
+  $('#batch-list').hidden = true;
+  $('#batch-fehler').hidden = true;
+  $('#batch-check').hidden = false;
+  $('#batch-apply').hidden = true;
+  $('#batch-back').hidden = true;
+}
+$('#cal-batch').addEventListener('click', () => oeffneBatch(null));
+$('#photo-batch').addEventListener('click', () => {
+  const id = photoOpen;
+  dlgPhoto.close();
+  oeffneBatch(id);
+});
+$('#batch-close').addEventListener('click', () => dlgBatch.close());
+$('#batch-back').addEventListener('click', zeigeBatchEingabe);
+$('#batch-check').addEventListener('click', () => {
+  const zeilen = $('#batch-text').value.split(/\r?\n/).map(z => z.trim()).filter(Boolean);
+  batchVorschlaege = [];
+  const misslungen = [];
+  zeilen.forEach(z => {
+    const t = parseTerminZeile(z);
+    if (t) batchVorschlaege.push(t); else misslungen.push(z);
+  });
+  const liste = $('#batch-list'); clear(liste);
+  batchVorschlaege.forEach((t, i) => {
+    const d = fromIso(t.date);
+    const li = h('li', { class:'item' });
+    li.appendChild(h('button', {
+      class:'check', type:'button', 'data-i': String(i), 'aria-label':'Auswählen',
+      onclick: ev => {
+        const zeile = ev.currentTarget.closest('.item');
+        zeile.classList.toggle('done');
+        /* Haken gesetzt = wird eingetragen. */
+        t.aus = !zeile.classList.contains('done');
+      }
+    }, [icon('i-check')]));
+    li.classList.add('done');   /* angehakt = wird eingetragen */
+    li.appendChild(h('div', { class:'item-body' }, [
+      h('span', { class:'item-text', text: t.title }),
+      h('div', { class:'item-meta' }, [
+        h('span', { class:'num', text: DE_DAY[d.getDay()].slice(0,2) + '. ' + longDate(t.date) + (t.time ? ' · ' + t.time + ' Uhr' : ' · ganztags') })
+      ])
+    ]));
+    liste.appendChild(li);
+  });
+  if (!batchVorschlaege.length){
+    $('#batch-fehler').textContent = 'Aus diesen Zeilen konnte ich kein Datum lesen. Schreib das Datum als 21.09.2026 und die Zeit als 10:20.';
+    $('#batch-fehler').hidden = false;
+    return;
+  }
+  $('#batch-eingabe').hidden = true;
+  $('#batch-list').hidden = false;
+  $('#batch-check').hidden = true;
+  $('#batch-apply').hidden = false;
+  $('#batch-back').hidden = false;
+  if (misslungen.length){
+    $('#batch-fehler').textContent = misslungen.length + ' Zeile(n) habe ich nicht verstanden: ' + misslungen.join(' / ');
+    $('#batch-fehler').hidden = false;
+  } else {
+    $('#batch-fehler').hidden = true;
+  }
+});
+$('#batch-apply').addEventListener('click', () => {
+  const nehmen = batchVorschlaege.filter(t => t.aus !== true);
+  nehmen.forEach(t => add({ t:'event', title: t.title, date: t.date, time: t.time, note:'' }));
+  dlgBatch.close();
+  if (nehmen.length){
+    calSel = nehmen[0].date;
+    calMonth = fromIso(nehmen[0].date);
+    render();
+    toast(nehmen.length === 1 ? 'Ein Termin eingetragen' : nehmen.length + ' Termine eingetragen');
+  }
+});
+
 const dlgEv = $('#dlg-event');
 let eventTarget = todayIso();
-function openEventDialog(date, photoId){
-  eventTarget = date || dayCursor;
-  $('#qe-title').value = ''; $('#qe-time').value = ''; $('#qe-note').value = '';
+let eventEdit = null;     /* gesetzt, wenn ein bestehender Termin geaendert wird */
+function openEventDialog(date, photoId, editId){
+  eventEdit = editId || null;
+  const alt = eventEdit ? rec(eventEdit) : null;
+  eventTarget = (alt && alt.date) || date || dayCursor;
+  $('#qe-title').value = alt ? (alt.title || '') : '';
+  $('#qe-time').value  = alt ? (alt.time || '')  : '';
+  $('#qe-note').value  = alt ? (alt.note || '')  : '';
   $('#qe-date').value = eventTarget;
-  $('#dlg-event-title').textContent = 'Termin eintragen';
+  $('#dlg-event-title').textContent = alt ? 'Termin bearbeiten' : 'Termin eintragen';
+  $('#qe-save').textContent = alt ? 'Speichern' : 'Eintragen';
   const shot = $('#qe-shot'), hint = $('#qe-shot-hint');
   const ph = photoId ? rec(photoId) : null;
   if (ph && ph.data){
@@ -2214,10 +2619,17 @@ $('#qe-save').addEventListener('click', () => {
   if (!title){ $('#qe-title').focus(); return; }
   /* Das Datumsfeld gewinnt: vom Zettel abgelesen kann es ein ganz anderer Tag sein. */
   const date = $('#qe-date').value || eventTarget;
-  add({ t:'event', title, date, time: $('#qe-time').value || '', note: $('#qe-note').value.trim() });
+  const felder = { title, date, time: $('#qe-time').value || '', note: $('#qe-note').value.trim() };
+  if (eventEdit){
+    put(eventEdit, felder);
+    toast('Termin geändert');
+  } else {
+    add(Object.assign({ t:'event' }, felder));
+    toast('Termin am ' + longDate(date) + ' eingetragen');
+  }
+  eventEdit = null;
   dlgEv.close();
   calSel = date;
-  toast('Termin am ' + longDate(date) + ' eingetragen');
 });
 
 /* ---- Vorlesen ---- */

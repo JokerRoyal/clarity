@@ -1002,6 +1002,16 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
       <button type="button" class="btn ghost" id="set-sync-now" hidden style="align-self:flex-start; margin-top:.35rem">Jetzt abgleichen</button>
     </div>
     <div class="sheet-row">
+      <label for="set-sync-url">Eigener Abgleich</label>
+      <div class="field"><input id="set-sync-url" type="url" placeholder="https://…workers.dev" autocomplete="off" spellcheck="false" aria-label="Adresse des Abgleichs"></div>
+      <div class="field"><input id="set-sync-key" type="password" placeholder="Schlüssel" autocomplete="off" aria-label="Schlüssel für den Abgleich"></div>
+      <div class="row" style="flex-wrap:wrap">
+        <button type="button" class="btn ghost" id="set-sync-save">Verbinden</button>
+        <button type="button" class="btn quiet" id="set-sync-off" hidden>Trennen</button>
+      </div>
+      <span class="hint">Adresse und Schlüssel deines eigenen Ablageorts. Beides bleibt auf diesem Gerät und steht nirgends im Netz.</span>
+    </div>
+    <div class="sheet-row">
       <label>Sicherung</label>
       <div class="row" style="flex-wrap:wrap">
         <button type="button" class="btn ghost" id="set-export">Backup speichern</button>
@@ -1230,6 +1240,99 @@ let lastPush = '';
 let bootCount = 0;       /* Zahl der Eintraege beim Oeffnen — Schutz vor Leerlauf */
 let wipeAbsicht = false; /* nur nach ausdruecklichem "Alles löschen" darf leer werden */
 
+/* ---------------------------------------------------------------
+   EIGENER ABGLEICH
+   Ein kleiner Ablageort im eigenen Cloudflare-Konto. Die Seite
+   selbst weiss nichts davon — Adresse und Schluessel stehen in den
+   Einstellungen und bleiben auf dem Geraet. Der Ablageort fuehrt
+   beim Annehmen zusammen, je Eintrag gewinnt der juengere Stand.
+   --------------------------------------------------------------- */
+const ABGLEICH_URL = 'clarity.sync.url';
+const ABGLEICH_KEY = 'clarity.sync.key';
+let eigen = null;          /* {url, key} oder null */
+let eigenTimer = 0;
+let eigenStand = '';       /* Uhrzeit des letzten Abgleichs */
+let eigenFehler = '';
+
+function eigenLaden(){
+  try{
+    const u = (localStorage.getItem(ABGLEICH_URL) || '').trim();
+    const k = (localStorage.getItem(ABGLEICH_KEY) || '').trim();
+    eigen = (u && k) ? { url: u.replace(/\/+$/, ''), key: k } : null;
+  }catch(e){ eigen = null; }
+}
+eigenLaden();
+
+async function eigenRuf(methode, koerper){
+  if (!eigen) return null;
+  const res = await fetch(eigen.url, {
+    method: methode,
+    headers: Object.assign({ 'x-clarity-key': eigen.key },
+                           koerper ? { 'content-type': 'application/json' } : {}),
+    body: koerper || undefined,
+    cache: 'no-store'
+  });
+  if (!res.ok){
+    let grund = 'Antwort ' + res.status;
+    try{ const j = await res.json(); if (j && j.fehler) grund = j.fehler; }catch(e){}
+    throw new Error(grund);
+  }
+  return await res.json();
+}
+/* Den fremden Stand hereinholen und mit dem eigenen vereinen. */
+async function eigenHolen(){
+  if (!eigen) return 0;
+  try{
+    setSync('saving', 'Gleicht ab…');
+    const dort = await eigenRuf('GET');
+    let dazu = 0;
+    if (dort && dort.recs){
+      const vorher = JSON.stringify(S.recs);
+      S.recs = merge(S.recs, dort.recs);
+      if (JSON.stringify(S.recs) !== vorher){
+        dazu = Object.keys(dort.recs).length;
+        try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+        render();
+      }
+    }
+    eigenFehler = '';
+    eigenStand = clock(new Date());
+    setSync('ok', 'Abgeglichen ' + eigenStand);
+    return dazu;
+  }catch(e){
+    eigenFehler = e.message || 'Nicht erreichbar';
+    setSync('error', 'Abgleich stockt');
+    return 0;
+  }
+}
+/* Den eigenen Stand hinschicken. Der Ablageort fuehrt zusammen und
+   gibt das Ergebnis zurueck — damit steht hier sofort beides. */
+async function eigenSenden(){
+  if (!eigen) return;
+  clearTimeout(eigenTimer);
+  /* Dieselbe Notbremse wie in der Wolke: leer ersetzt niemals voll. */
+  if (liveCount(S.recs) === 0 && bootCount > 0 && !wipeAbsicht){
+    setSync('error', 'Sicherung angehalten');
+    return;
+  }
+  try{
+    setSync('saving', 'Sichert…');
+    const zurueck = await eigenRuf('PUT', JSON.stringify({ v:1, recs: S.recs }));
+    if (zurueck && zurueck.recs){
+      S.recs = merge(S.recs, zurueck.recs);
+      try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+      render();
+    }
+    eigenFehler = '';
+    eigenStand = clock(new Date());
+    setSync('ok', 'Abgeglichen ' + eigenStand);
+  }catch(e){
+    eigenFehler = e.message || 'Nicht erreichbar';
+    setSync('error', 'Abgleich stockt');
+    eigenTimer = setTimeout(eigenSenden, 20000);
+  }
+}
+
 function liveCount(recs){
   let n = 0;
   for (const k in (recs || {})){
@@ -1321,9 +1424,16 @@ function setSync(state, txt){
     zeilen.push(aufGithub
       ? 'Fassung: GitHub Pages — diese Fassung speichert grundsätzlich nur auf diesem Gerät.'
       : 'Fassung: ' + location.hostname);
-    zeilen.push(cloud
-      ? 'Abgleich: aktiv. Was du hier änderst, steht auf jedem Gerät, das denselben Link öffnet.'
-      : 'Abgleich: aus. Alles bleibt in diesem Browser.');
+    zeilen.push(eigen
+      ? 'Abgleich: eigener Ablageort. Was du hier änderst, steht auf jedem Gerät, das dieselbe Adresse benutzt.'
+      : cloud
+        ? 'Abgleich: aktiv. Was du hier änderst, steht auf jedem Gerät, das denselben Link öffnet.'
+        : 'Abgleich: aus. Alles bleibt in diesem Browser.');
+    if (eigen){
+      zeilen.push('Adresse: ' + eigen.url);
+      if (eigenStand) zeilen.push('Zuletzt abgeglichen: ' + eigenStand + '.');
+      if (eigenFehler) zeilen.push('Zuletzt gemeldet: ' + eigenFehler);
+    }
     if (cloud){
       zeilen.push(cloudFound === null
         ? 'Beim Öffnen lag noch nichts in der Wolke — das ist normal, solange von hier noch nichts gesichert wurde.'
@@ -1334,9 +1444,16 @@ function setSync(state, txt){
     zeilen.forEach(z => hint.appendChild(h('span', { text: z, style:'display:block' })));
   }
   const btn = $('#set-sync-now');
-  if (btn) btn.hidden = !cloud;
+  if (btn) btn.hidden = !cloud && !eigen;
+  const aus = $('#set-sync-off');
+  if (aus) aus.hidden = !eigen;
 }
 function schedulePush(){
+  if (eigen){
+    clearTimeout(eigenTimer);
+    setSync('saving', 'Sichert…');
+    eigenTimer = setTimeout(eigenSenden, 3500);
+  }
   if (!cloud) return;
   clearTimeout(pushTimer);
   setSync('saving', 'Sichert…');
@@ -2677,6 +2794,8 @@ $('#set-rate').addEventListener('change', ev => {
 const dlgSet = $('#dlg-settings');
 function openSettings(){
   $('#set-name').value = prefs().name || '';
+  $('#set-sync-url').value = eigen ? eigen.url : '';
+  $('#set-sync-key').value = eigen ? eigen.key : '';
   setSync(syncState, $('#sync-txt').textContent);
   fillVoiceList();
   if (typeof SR !== 'undefined' && SR) $('#set-wake').checked = dauerhaft;
@@ -2689,10 +2808,48 @@ $('#set-name').addEventListener('change', ev => { put('_prefs', { t:'prefs', nam
 $('#set-sync-now').addEventListener('click', async ev => {
   const b = ev.currentTarget;
   b.disabled = true;
+  const stand = b.textContent;
   b.textContent = 'Gleicht ab…';
+  if (eigen){
+    await eigenHolen();
+    await eigenSenden();
+    b.disabled = false;
+    b.textContent = stand;
+    toast(eigenFehler ? 'Abgleich fehlgeschlagen: ' + eigenFehler : 'Abgeglichen');
+    setSync(syncState, $('#sync-txt').textContent);
+    return;
+  }
   await pushCloud();
   /* Neu laden holt anschliessend, was das andere Gerät hinterlegt hat. */
   setTimeout(() => location.reload(), 600);
+});
+
+/* ---- Eigenen Ablageort verbinden und trennen ---- */
+$('#set-sync-save').addEventListener('click', async ev => {
+  const url = $('#set-sync-url').value.trim().replace(/\/+$/, '');
+  const key = $('#set-sync-key').value.trim();
+  if (!/^https:\/\//i.test(url)){ toast('Die Adresse muss mit https:// beginnen'); $('#set-sync-url').focus(); return; }
+  if (!key){ toast('Ohne Schlüssel geht es nicht'); $('#set-sync-key').focus(); return; }
+  const b = ev.currentTarget;
+  b.disabled = true; b.textContent = 'Prüft…';
+  try{ localStorage.setItem(ABGLEICH_URL, url); localStorage.setItem(ABGLEICH_KEY, key); }catch(e){}
+  eigenLaden();
+  await eigenHolen();
+  if (eigenFehler){
+    toast('Klappt nicht: ' + eigenFehler);
+  } else {
+    await eigenSenden();
+    toast(eigenFehler ? 'Klappt nicht: ' + eigenFehler : 'Verbunden — ab jetzt gleicht Clarity von selbst ab');
+  }
+  b.disabled = false; b.textContent = 'Verbinden';
+  setSync(syncState, $('#sync-txt').textContent);
+});
+$('#set-sync-off').addEventListener('click', () => {
+  try{ localStorage.removeItem(ABGLEICH_URL); localStorage.removeItem(ABGLEICH_KEY); }catch(e){}
+  eigen = null; eigenStand = ''; eigenFehler = '';
+  $('#set-sync-key').value = '';
+  setSync('local', 'Nur auf diesem Gerät');
+  toast('Abgleich getrennt — deine Einträge bleiben hier');
 });
 
 /* Sichern in drei Stufen: erst der richtige Weg, dann der klassische
@@ -3488,6 +3645,9 @@ async function boot(){
       ? await window.claude.use('artifact') : null;
   }catch(e){ cloud = null; }
 
+  /* Der eigene Ablageort zuerst: was dort liegt, gehoert hierher. */
+  if (eigen) await eigenHolen();
+
   /* Nichts da? Dann kommt der eingebackene Startbestand zum Zug — aber nur
      für Einträge, die weder hier noch in der Wolke existieren. Eine
      Löschmarke bleibt eine Löschmarke, Gelöschtes kehrt nicht zurück. */
@@ -3511,6 +3671,9 @@ async function boot(){
     toast(bootCount + ' Einträge wiederhergestellt');
   }
 
+  /* ... und was hier liegt, gehoert dorthin. */
+  if (eigen) eigenSenden();
+
   renderNews();
   paintSky();
   render();
@@ -3530,8 +3693,16 @@ async function boot(){
     }
   }
   setInterval(tick, 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
-  window.addEventListener('pagehide', () => { if (cloud && pushTimer) pushCloud(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    tick();
+    /* Zurueck in der App: nachsehen, was das andere Geraet getan hat. */
+    if (eigen) eigenHolen();
+  });
+  window.addEventListener('pagehide', () => {
+    if (cloud && pushTimer) pushCloud();
+    if (eigen && eigenTimer) eigenSenden();
+  });
 }
 boot();
 })();

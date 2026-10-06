@@ -505,6 +505,16 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
   display:block; font-style:normal; font-family:var(--body); font-size:.62rem;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
+/* Das Ergebnis der Probe bleibt stehen — eine Sprechblase ist nach
+   zwei Sekunden weg, und genau dann braucht man sie noch. */
+.probe{
+  background:var(--surf2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:.6rem .7rem; font-size:var(--fs-xs); line-height:1.55;
+  display:flex; flex-direction:column; gap:.1rem;
+}
+.probe b{font-weight:600}
+.probe .ja{color:var(--good)}
+.probe .nein{color:var(--warn)}
 .viewer{max-width:min(540px,94vw)}
 .viewer img{width:100%; display:block; border-radius:var(--r2); background:#0B1020}
 
@@ -1007,8 +1017,10 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
       <div class="field"><input id="set-sync-key" type="password" placeholder="Schlüssel" autocomplete="off" aria-label="Schlüssel für den Abgleich"></div>
       <div class="row" style="flex-wrap:wrap">
         <button type="button" class="btn ghost" id="set-sync-save">Verbinden</button>
+        <button type="button" class="btn ghost" id="set-sync-test">Verbindung prüfen</button>
         <button type="button" class="btn quiet" id="set-sync-off" hidden>Trennen</button>
       </div>
+      <div class="probe" id="set-sync-probe" hidden></div>
       <span class="hint">Adresse und Schlüssel deines eigenen Ablageorts. Beides bleibt auf diesem Gerät und steht nirgends im Netz.</span>
     </div>
     <div class="sheet-row">
@@ -2889,6 +2901,56 @@ $('#set-sync-key').addEventListener('keydown', ev => {
    schickt das Formular ab, und das Fenster meldet sein Schliessen. */
 $('#dlg-settings form').addEventListener('submit', () => { abgleichVerbinden(false); });
 dlgSet.addEventListener('close', () => { abgleichVerbinden(false); });
+/* ---- Verbindung prüfen: sagt im Klartext, woran es haengt ---- */
+$('#set-sync-test').addEventListener('click', async ev => {
+  const kasten = $('#set-sync-probe');
+  const zeilen = [];
+  const zeile = (text, art) => zeilen.push({ text: text, art: art });
+
+  const url = $('#set-sync-url').value.trim().replace(/\/+$/, '');
+  const key = $('#set-sync-key').value.trim();
+  const b = ev.currentTarget;
+  b.disabled = true; b.textContent = 'Prüft…';
+
+  zeile('Diese Seite: ' + location.hostname);
+  zeile('Adresse eingetragen: ' + (url || '— keine —'), url ? 'ja' : 'nein');
+  zeile('Schlüssel eingetragen: ' + (key ? key.length + ' Zeichen' : '— keiner —'), key ? 'ja' : 'nein');
+
+  let gemerkt = false;
+  try{ gemerkt = localStorage.getItem(ABGLEICH_URL) === url && !!localStorage.getItem(ABGLEICH_KEY); }catch(e){}
+  zeile('Auf diesem Gerät gemerkt: ' + (gemerkt ? 'ja' : 'nein'), gemerkt ? 'ja' : 'nein');
+  const hierN = liveCount(S.recs);
+  zeile('Hier gespeichert: ' + hierN + (hierN === 1 ? ' Eintrag' : ' Einträge'));
+
+  if (url && key){
+    try{
+      const res = await fetch(url, { method:'GET', headers:{ 'x-clarity-key': key }, cache:'no-store' });
+      if (res.ok){
+        const dort = await res.json();
+        const n = liveCount(dort && dort.recs);
+        zeile('Antwort vom Ablageort: in Ordnung', 'ja');
+        zeile('Dort liegen: ' + n + (n === 1 ? ' Eintrag' : ' Einträge') + (dort && dort.stand ? ' · Stand ' + String(dort.stand).slice(0,16).replace('T',' ') : ''), n ? 'ja' : 'nein');
+        if (!n) zeile('Dort ist noch nichts angekommen — auf diesem Gerät auf „Verbinden" tippen.', 'nein');
+      } else if (res.status === 401){
+        zeile('Antwort: Schlüssel passt nicht (401). Tippfehler, oder im Worker steht ein anderer.', 'nein');
+      } else {
+        zeile('Antwort: Fehler ' + res.status, 'nein');
+      }
+    }catch(e){
+      zeile('Der Ablageort ist von diesem Gerät aus nicht erreichbar.', 'nein');
+      zeile('Meldung: ' + (e && e.message ? e.message : 'unbekannt'));
+      zeile('Das deutet auf eine falsche Adresse hin — oder etwas auf dem Gerät blockiert die Anfrage.');
+    }
+  }
+
+  clear(kasten);
+  zeilen.forEach(z => kasten.appendChild(h('span', {
+    text: z.text, class: z.art === 'ja' ? 'ja' : z.art === 'nein' ? 'nein' : ''
+  })));
+  kasten.hidden = false;
+  b.disabled = false; b.textContent = 'Verbindung prüfen';
+});
+
 $('#set-sync-off').addEventListener('click', () => {
   try{ localStorage.removeItem(ABGLEICH_URL); localStorage.removeItem(ABGLEICH_KEY); }catch(e){}
   eigen = null; eigenStand = ''; eigenFehler = '';

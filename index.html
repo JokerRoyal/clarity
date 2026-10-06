@@ -2824,26 +2824,71 @@ $('#set-sync-now').addEventListener('click', async ev => {
   setTimeout(() => location.reload(), 600);
 });
 
-/* ---- Eigenen Ablageort verbinden und trennen ---- */
-$('#set-sync-save').addEventListener('click', async ev => {
+/* ---- Eigenen Ablageort verbinden und trennen ----
+   Eingetragen allein genuegt nicht — wer die Felder ausfuellt und
+   weitergeht, meint "verbinden". Darum greift es auch beim Verlassen
+   des Feldes, nicht nur auf Knopfdruck. */
+let verbindetGerade = false;
+async function abgleichVerbinden(vonHand){
+  if (verbindetGerade) return;
   const url = $('#set-sync-url').value.trim().replace(/\/+$/, '');
   const key = $('#set-sync-key').value.trim();
-  if (!/^https:\/\//i.test(url)){ toast('Die Adresse muss mit https:// beginnen'); $('#set-sync-url').focus(); return; }
-  if (!key){ toast('Ohne Schlüssel geht es nicht'); $('#set-sync-key').focus(); return; }
-  const b = ev.currentTarget;
+  if (!url && !key) return;
+  /* https, damit unterwegs niemand mitliest. Eine Adresse auf dem eigenen
+     Rechner darf auch http sein — sonst liesse sich nichts ausprobieren. */
+  const daheim = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(url);
+  if (!/^https:\/\//i.test(url) && !daheim){
+    if (vonHand){ toast('Die Adresse muss mit https:// beginnen'); $('#set-sync-url').focus(); }
+    return;
+  }
+  if (!key){
+    if (vonHand){ toast('Ohne Schlüssel geht es nicht'); $('#set-sync-key').focus(); }
+    return;
+  }
+  /* Schon genau so verbunden? Dann nichts tun. */
+  if (eigen && eigen.url === url && eigen.key === key && !eigenFehler) return;
+
+  verbindetGerade = true;
+  const b = $('#set-sync-save');
   b.disabled = true; b.textContent = 'Prüft…';
-  try{ localStorage.setItem(ABGLEICH_URL, url); localStorage.setItem(ABGLEICH_KEY, key); }catch(e){}
-  eigenLaden();
+
+  /* Erst im Gedaechtnis — damit es auch dann laeuft, wenn der Browser
+     nichts ablegen darf (im Rahmen von claude.ai kommt das vor). */
+  eigen = { url: url, key: key };
+  let bleibt = false;
+  try{
+    localStorage.setItem(ABGLEICH_URL, url);
+    localStorage.setItem(ABGLEICH_KEY, key);
+    bleibt = localStorage.getItem(ABGLEICH_URL) === url && localStorage.getItem(ABGLEICH_KEY) === key;
+  }catch(e){ bleibt = false; }
+
   await eigenHolen();
+  if (!eigenFehler) await eigenSenden();
+
+  b.disabled = false; b.textContent = 'Verbinden';
+  verbindetGerade = false;
+
   if (eigenFehler){
     toast('Klappt nicht: ' + eigenFehler);
+  } else if (!bleibt){
+    toast('Verbunden — aber dieses Fenster darf nichts merken. Öffne Clarity direkt im Browser.');
   } else {
-    await eigenSenden();
-    toast(eigenFehler ? 'Klappt nicht: ' + eigenFehler : 'Verbunden — ab jetzt gleicht Clarity von selbst ab');
+    toast('Verbunden — ab jetzt gleicht Clarity von selbst ab');
   }
-  b.disabled = false; b.textContent = 'Verbinden';
   setSync(syncState, $('#sync-txt').textContent);
+}
+$('#set-sync-save').addEventListener('click', () => abgleichVerbinden(true));
+$('#set-sync-url').addEventListener('change', () => abgleichVerbinden(false));
+$('#set-sync-key').addEventListener('change', () => abgleichVerbinden(false));
+$('#set-sync-key').addEventListener('keydown', ev => {
+  if (ev.key === 'Enter'){ ev.preventDefault(); abgleichVerbinden(true); }
 });
+/* Beim Schliessen der Einstellungen: ausgefuellt, aber nie bestaetigt —
+   das war der haeufigste Stolperstein. Zwei Wege, weil nicht jeder
+   Browser das close-Ereignis zuverlaessig meldet: der Knopf "Fertig"
+   schickt das Formular ab, und das Fenster meldet sein Schliessen. */
+$('#dlg-settings form').addEventListener('submit', () => { abgleichVerbinden(false); });
+dlgSet.addEventListener('close', () => { abgleichVerbinden(false); });
 $('#set-sync-off').addEventListener('click', () => {
   try{ localStorage.removeItem(ABGLEICH_URL); localStorage.removeItem(ABGLEICH_KEY); }catch(e){}
   eigen = null; eigenStand = ''; eigenFehler = '';

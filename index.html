@@ -1291,9 +1291,25 @@ async function eigenRuf(methode, koerper){
   }
   return await res.json();
 }
+/* Nachsehen, aber nicht im Sekundentakt: mehrere Anlaesse koennen
+   gleichzeitig ausloesen (Fenster nach vorn, Reiter sichtbar, Zeitgeber). */
+let letztesHolen = 0;
+function eigenNachsehen(mindestabstandMs, nurWennSichtbar){
+  if (!eigen) return;
+  /* Der Zeitgeber soll ruhen, wenn niemand hinschaut. Kommt der Anstoss
+     dagegen vom Fenster selbst, ist jemand da — dann wird nachgesehen,
+     auch wenn der Browser die Seite gerade als verdeckt fuehrt. */
+  if (nurWennSichtbar && document.visibilityState === 'hidden') return;
+  const jetzt = Date.now();
+  if (jetzt - letztesHolen < (mindestabstandMs || 15000)) return;
+  letztesHolen = jetzt;
+  eigenHolen();
+}
+
 /* Den fremden Stand hereinholen und mit dem eigenen vereinen. */
 async function eigenHolen(){
   if (!eigen) return 0;
+  letztesHolen = Date.now();
   try{
     setSync('saving', 'Gleicht ab…');
     const dort = await eigenRuf('GET');
@@ -3804,8 +3820,17 @@ async function boot(){
     if (document.hidden) return;
     tick();
     /* Zurueck in der App: nachsehen, was das andere Geraet getan hat. */
-    if (eigen) eigenHolen();
+    eigenNachsehen(3000);
   });
+  /* Am Rechner bleibt ein Fenster "sichtbar", auch wenn ein anderes davor
+     liegt — dann meldet sich visibilitychange nie. Genau das war die Luecke:
+     am Handy eingetragen, am Rechner stand die Seite schon offen und sah
+     nichts. Das Nachvornholen des Fensters ist hier das richtige Zeichen. */
+  window.addEventListener('focus', () => eigenNachsehen(3000));
+  window.addEventListener('pageshow', () => eigenNachsehen(3000));
+  /* Und waehrend die Seite offen vor einem liegt, alle fuenf Minuten von
+     selbst. Oefter nicht: der Stand traegt die Zettelbilder mit sich. */
+  setInterval(() => eigenNachsehen(290000, true), 60000);
   window.addEventListener('pagehide', () => {
     if (cloud && pushTimer) pushCloud();
     if (eigen && eigenTimer) eigenSenden();

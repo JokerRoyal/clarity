@@ -507,6 +507,15 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
 }
 /* Das Ergebnis der Probe bleibt stehen — eine Sprechblase ist nach
    zwei Sekunden weg, und genau dann braucht man sie noch. */
+.warnbalken{
+  display:flex; gap:.7rem; align-items:center; flex-wrap:wrap;
+  background:var(--surf); border:1px solid var(--accent);
+  border-radius:var(--r2); padding:.7rem .85rem;
+  box-shadow:var(--shadow);
+}
+.warnbalken > svg{width:19px; height:19px; flex:0 0 19px; color:var(--accent)}
+.warnbalken b{display:block; font-weight:700; font-size:var(--fs-sm)}
+.warnbalken span{font-size:var(--fs-xs); color:var(--ink2)}
 .probe{
   background:var(--surf2); border:1px solid var(--line); border-radius:var(--r2);
   padding:.6rem .7rem; font-size:var(--fs-xs); line-height:1.55;
@@ -733,6 +742,15 @@ dialog::backdrop{background:rgba(8,12,22,.55)}
               </div>
             </div>
           </header>
+
+          <div class="warnbalken" id="t-kein-abgleich" hidden>
+            <svg aria-hidden="true"><use href="#i-info"></use></svg>
+            <div class="grow">
+              <b>Dieses Gerät steht allein.</b>
+              <span>Der Abgleich ist hier nicht eingerichtet — was du einträgst, bleibt auf diesem Gerät.</span>
+            </div>
+            <button class="btn" type="button" id="t-abgleich-einrichten">Einrichten</button>
+          </div>
 
           <div class="quote" id="t-quote-card">
             <p id="t-quote">—</p>
@@ -1827,6 +1845,10 @@ function renderToday(){
   evs.forEach(x => ev.appendChild(eventRow(x[0], x[1])));
   $('#t-events-empty').hidden = evs.length > 0;
 
+  /* Der haeufigste stille Fehler: ein Geraet ist schlicht nicht verbunden.
+     Das soll man sehen, ohne in den Einstellungen zu suchen. */
+  $('#t-kein-abgleich').hidden = !!(eigen || cloud);
+
   renderRoutine();
   renderPhotos(t, $('#t-photos'), $('#t-photo-count'));
   if (isToday){
@@ -2829,6 +2851,10 @@ function openSettings(){
   if (typeof SR !== 'undefined' && SR) $('#set-wake').checked = dauerhaft;
   dlgSet.showModal();
 }
+$('#t-abgleich-einrichten').addEventListener('click', () => {
+  openSettings();
+  setTimeout(() => $('#set-sync-url').scrollIntoView({ block:'center' }), 60);
+});
 $('#open-settings').addEventListener('click', openSettings);
 $('#open-settings-m').addEventListener('click', openSettings);
 $('#set-name').addEventListener('change', ev => { put('_prefs', { t:'prefs', name: ev.currentTarget.value.trim() }); paintSky(); });
@@ -3801,6 +3827,26 @@ async function boot(){
   paintSky();
   render();
   go('today');
+
+  /* Einrichten per Link: ...#abgleich=https://… traegt die Adresse ein und
+     fragt nur noch nach dem Passwort. Das Abtippen der langen Adresse auf
+     dem Telefon war die Stelle, an der es dreimal hing. */
+  const ausLink = (location.hash || '').match(/#\s*abgleich=(.+)$/i);
+  if (ausLink){
+    let adresse = '';
+    try{ adresse = decodeURIComponent(ausLink[1]).trim(); }catch(e){ adresse = ausLink[1].trim(); }
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+    if (/^https:\/\//i.test(adresse)){
+      openSettings();
+      $('#set-sync-url').value = adresse.replace(/\/+$/, '');
+      $('#set-sync-key').value = '';
+      setTimeout(() => {
+        $('#set-sync-key').scrollIntoView({ block:'center' });
+        try{ $('#set-sync-key').focus(); }catch(e){}
+      }, 80);
+      toast('Adresse übernommen — jetzt nur noch dein Passwort eintippen');
+    }
+  }
 
   /* Um Mitternacht wechselt der Tag, ohne dass jemand etwas anklickt. */
   let lastDay = todayIso();

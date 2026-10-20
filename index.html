@@ -1295,13 +1295,28 @@ eigenLaden();
 
 async function eigenRuf(methode, koerper){
   if (!eigen) return null;
-  const res = await fetch(eigen.url, {
-    method: methode,
-    headers: Object.assign({ 'x-clarity-key': eigen.key },
-                           koerper ? { 'content-type': 'application/json' } : {}),
-    body: koerper || undefined,
-    cache: 'no-store'
-  });
+  /* Mit Abbruch nach zehn Sekunden: ohne ihn haengt beim Start die ganze
+     App an einem Ablageort, der gerade nicht antwortet. */
+  let abbruch = null, wecker = 0;
+  try{
+    abbruch = new AbortController();
+    wecker = setTimeout(() => { try{ abbruch.abort(); }catch(e){} }, 10000);
+  }catch(e){ abbruch = null; }
+  let res;
+  try{
+    res = await fetch(eigen.url, {
+      method: methode,
+      headers: Object.assign({ 'x-clarity-key': eigen.key },
+                             koerper ? { 'content-type': 'application/json' } : {}),
+      body: koerper || undefined,
+      cache: 'no-store',
+      signal: abbruch ? abbruch.signal : undefined
+    });
+  }catch(e){
+    clearTimeout(wecker);
+    throw new Error(e && e.name === 'AbortError' ? 'Keine Antwort nach zehn Sekunden' : (e && e.message) || 'Nicht erreichbar');
+  }
+  clearTimeout(wecker);
   if (!res.ok){
     let grund = 'Antwort ' + res.status;
     try{ const j = await res.json(); if (j && j.fehler) grund = j.fehler; }catch(e){}
@@ -3836,15 +3851,22 @@ async function boot(){
     let adresse = '';
     try{ adresse = decodeURIComponent(ausLink[1]).trim(); }catch(e){ adresse = ausLink[1].trim(); }
     try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
-    if (/^https:\/\//i.test(adresse)){
-      openSettings();
-      $('#set-sync-url').value = adresse.replace(/\/+$/, '');
-      $('#set-sync-key').value = '';
-      setTimeout(() => {
-        $('#set-sync-key').scrollIntoView({ block:'center' });
-        try{ $('#set-sync-key').focus(); }catch(e){}
-      }, 80);
-      toast('Adresse übernommen — jetzt nur noch dein Passwort eintippen');
+    const sauber = adresse.replace(/\/+$/, '');
+    if (/^https:\/\//i.test(sauber)){
+      if (eigen && eigen.url === sauber){
+        /* Schon verbunden — dann ist der Anhang nur noch die Startadresse
+           des Symbols auf dem Startbildschirm und soll nicht jedes Mal die
+           Einstellungen aufreissen. */
+      } else {
+        openSettings();
+        $('#set-sync-url').value = sauber;
+        $('#set-sync-key').value = '';
+        setTimeout(() => {
+          $('#set-sync-key').scrollIntoView({ block:'center' });
+          try{ $('#set-sync-key').focus(); }catch(e){}
+        }, 80);
+        toast('Adresse übernommen — jetzt nur noch dein Passwort eintippen');
+      }
     }
   }
 

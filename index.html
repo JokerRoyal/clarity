@@ -1513,7 +1513,10 @@ function schedulePush(){
   if (eigen){
     clearTimeout(eigenTimer);
     setSync('saving', 'Sichert…');
-    eigenTimer = setTimeout(eigenSenden, 3500);
+    /* Kurz genug, dass es noch rausgeht, bevor das Telefon weggelegt
+       wird — lang genug, um beim Tippen nicht bei jedem Buchstaben zu
+       senden. */
+    eigenTimer = setTimeout(eigenSenden, 1200);
   }
   if (!cloud) return;
   clearTimeout(pushTimer);
@@ -3885,7 +3888,13 @@ async function boot(){
   }
   setInterval(tick, 60000);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) return;
+    if (document.hidden){
+      /* Weggelegt. Steht noch etwas zum Senden an, muss es jetzt raus:
+         iOS friert die App gleich ein, und ein laufender Wecker kommt
+         dann nie mehr zum Zug. Das war die Luecke vom Handy zum Rechner. */
+      if (eigen && eigenTimer){ clearTimeout(eigenTimer); eigenSenden(); }
+      return;
+    }
     tick();
     /* Zurueck in der App: nachsehen, was das andere Geraet getan hat. */
     eigenNachsehen(3000);

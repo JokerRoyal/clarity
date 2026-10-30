@@ -3788,6 +3788,12 @@ document.addEventListener('focusin', ev => {
    8. Start
    ======================================================== */
 async function boot(){
+  /* Bitte um dauerhaften Speicher. Safari gewaehrt das selten, aber wo es
+     gilt, raeumt das System den Browserspeicher nicht einfach weg. */
+  try{
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  }catch(e){}
+
   const local = readLocal();
   if (local && local.recs) S.recs = local.recs;
 
@@ -3849,17 +3855,45 @@ async function boot(){
   /* Einrichten per Link: ...#abgleich=https://… traegt die Adresse ein und
      fragt nur noch nach dem Passwort. Das Abtippen der langen Adresse auf
      dem Telefon war die Stelle, an der es dreimal hing. */
-  const ausLink = (location.hash || '').match(/#\s*abgleich=(.+)$/i);
-  if (ausLink){
-    let adresse = '';
-    try{ adresse = decodeURIComponent(ausLink[1]).trim(); }catch(e){ adresse = ausLink[1].trim(); }
+  const anhang = (location.hash || '').replace(/^#/, '');
+  if (/abgleich=/i.test(anhang)){
+    const teile = {};
+    anhang.split('&').forEach(stueck => {
+      const i = stueck.indexOf('=');
+      if (i < 1) return;
+      const name = stueck.slice(0, i).trim().toLowerCase();
+      let wert = stueck.slice(i + 1);
+      try{ wert = decodeURIComponent(wert); }catch(e){}
+      teile[name] = wert.trim();
+    });
+    /* Der Anhang verschwindet sofort aus der Adresszeile — im Symbol auf dem
+       Startbildschirm bleibt er, dort gehoert er hin. */
     try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
-    const sauber = adresse.replace(/\/+$/, '');
-    if (/^https:\/\//i.test(sauber)){
-      if (eigen && eigen.url === sauber){
-        /* Schon verbunden — dann ist der Anhang nur noch die Startadresse
-           des Symbols auf dem Startbildschirm und soll nicht jedes Mal die
-           Einstellungen aufreissen. */
+
+    const sauber = (teile.abgleich || '').replace(/\/+$/, '');
+    const schluessel = teile.schluessel || '';
+    const daheimLink = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(sauber);
+    if (/^https:\/\//i.test(sauber) || daheimLink){
+      if (schluessel){
+        /* Adresse UND Schluessel im Symbol: dann richtet sich die App bei
+           jedem Start selbst wieder ein. Das ist der Ausweg aus iOS' Marotte,
+           den Speicher einer selten benutzten App einfach zu raeumen — danach
+           waere sonst alles vergessen und nichts gliche mehr ab. */
+        const neuVerbunden = !eigen || eigen.url !== sauber || eigen.key !== schluessel;
+        eigen = { url: sauber, key: schluessel };
+        try{
+          localStorage.setItem(ABGLEICH_URL, sauber);
+          localStorage.setItem(ABGLEICH_KEY, schluessel);
+        }catch(e){}
+        setSync(syncState, $('#sync-txt').textContent);
+        (async () => {
+          const dazu = await eigenHolen();
+          if (!eigenFehler) await eigenSenden();
+          if (neuVerbunden && !eigenFehler) toast('Verbunden — dein Stand ist wieder da');
+          render();
+        })();
+      } else if (eigen && eigen.url === sauber){
+        /* Schon verbunden — nichts aufreissen. */
       } else {
         openSettings();
         $('#set-sync-url').value = sauber;
